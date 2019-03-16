@@ -31,7 +31,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         return true
     }
 
-    override fun next(): Record {
+    override fun next(): MarcRecord {
         try {
             input.mark(LEADER_RECORD_LENGTH_LENGTH)
             val recordLengthBytes = ByteArray(LEADER_RECORD_LENGTH_LENGTH)
@@ -58,7 +58,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
     }
 
     private fun parseEncoding(encoding: String): String {
-        return when (encoding) {
+        return when (encoding.toUpperCase()) {
             "MARC8", "MARC-8" -> "MARC8"
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> "ISO-8859-1"
             "UTF8", "UTF-8" -> "UTF8"
@@ -82,7 +82,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         }
     }
 
-    private fun parseRecord(recordBytes: ByteArray): Record {
+    private fun parseRecord(recordBytes: ByteArray): MarcRecord {
         val record = MarcRecord().apply {
             leader.setData(recordBytes.copyOfRange(0, LEADER_LENGTH).toString(Charsets.ISO_8859_1))
         }
@@ -99,7 +99,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
             throw MarcException("Expected field terminator at end of directory")
         }
 
-        parseFields(recordBytes.copyOfRange(record.leader.baseAddressOfData, recordBytes.size - 1), directoryEntries, record)
+        parseFields(recordBytes.copyOfRange(record.leader.baseAddressOfData, recordBytes.lastIndex), directoryEntries, record)
 
         if (recordBytes.last() != RECORD_TERMINATOR_BYTE) {
             throw MarcException("Expected record terminator at end of record")
@@ -154,7 +154,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
                     if (e is IndexOutOfBoundsException) {
                         throw MarcException("Error parsing data field for tag ${entry.first} because of trying to read beyond end of record.")
                     } else {
-                        throw MarcException("Error parsing data field for tag ${entry.first} with data: ${recordBytes.copyOfRange(entry.third + 2, entry.third + entry.second)}")
+                        throw MarcException("Error parsing data field for tag ${entry.first} with data: ${recordBytes.copyOfRange(entry.third + 2, entry.third + entry.second).toString(Charsets.ISO_8859_1)}")
                     }
                 }
             }
@@ -187,17 +187,17 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         return subfields
     }
 
-    private fun getSubfieldLength(bais: ByteArrayInputStream): Int {
-        bais.mark(9999)
+    private fun getSubfieldLength(stream: ByteArrayInputStream): Int {
+        stream.mark(9999)
         var bytesRead = 0
         while (true) {
-            when (bais.read()) {
+            when (stream.read()) {
                 SUBFIELD_DELIMITER, FIELD_TERMINATOR -> {
-                    bais.reset()
+                    stream.reset()
                     return bytesRead
                 }
                 -1 -> {
-                    bais.reset()
+                    stream.reset()
                     throw MarcException("Subfield not terminated")
                 }
                 else -> bytesRead++
@@ -251,21 +251,3 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
          */
     }
 }
-
-fun main() {
-//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/records/bad_too_long_plus_2.mrc"
-    val filename = "/Users/philip/Downloads/UnicodeTest.mrc"
-
-    MarcStreamReader(FileInputStream(filename), "MARC8").use {
-        for (record in it) {
-            println(record)
-        }
-    }
-}
-
-/*
-bad-characters-in-various-fields.mrc - reads the same as Marc4J
-bad_hathi-records.mrc - reads the same as Marc4J (permissive reader should read as last record size > 99999)
-bad_leaders_10_11.mrc - works here and not Marc4J (probably because I always code some fields like indicator count as 2 if not a number)
-bad_too_long_plus_2.mrc - broken differently
- */

@@ -1,5 +1,6 @@
 package org.marc4k.converter
 
+import org.marc4k.MarcException
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.util.*
@@ -18,7 +19,9 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
             "characterSet" -> {
                 currentCharacterSet.clear()
                 currentCombiningCodes.clear()
-                currentCodeData = CodeData(attributes?.getValue("ISOcode")!!.toInt(16))
+                attributes?.getValue("ISOcode")?.let {
+                    currentCodeData = CodeData(it.toInt(16))
+                } ?: throw MarcException("CodeTable does not contain an ISOcode attribute")
             }
         }
     }

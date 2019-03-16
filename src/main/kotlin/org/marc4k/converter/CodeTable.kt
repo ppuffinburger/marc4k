@@ -25,9 +25,9 @@ class CodeTable {
 
     fun isCombining(marc8Code: Marc8Code, g0: GraphicSet, g1: GraphicSet): Boolean {
         return if (marc8Code <= 0x7E) {
-            combiningCodes[g0]?.contains(marc8Code) ?: false
+            combiningCodes[g0]?.contains(marc8Code) ?: combiningCodes[g0]?.contains(marc8Code + 0x80) ?: false
         } else {
-            combiningCodes[g1]?.contains(marc8Code) ?: false
+            combiningCodes[g1]?.contains(marc8Code) ?: combiningCodes[g1]?.contains(marc8Code - 0x80) ?: false
         }
     }
 

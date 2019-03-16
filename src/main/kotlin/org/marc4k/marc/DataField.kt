@@ -12,6 +12,7 @@ data class DataField(
         subfields.clear()
 
         subfields += data.split(SUBFIELD_DELIMITER)
+            .asSequence()
             .filter { it.isNotBlank() && it.length > 1 }
             .map { Subfield(it[0], it.substring(1)) }
     }

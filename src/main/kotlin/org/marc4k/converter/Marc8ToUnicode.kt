@@ -145,7 +145,7 @@ class Marc8ToUnicode : CharacterConverter {
                 0x24 -> {
                     if (!loadedMultiByteCodeTable) { loadMultiByte() }
 
-                    var switchOffset = tracker.offset + 2 + extra + extra2
+                    val switchOffset = tracker.offset + 2 + extra + extra2
                     if (switchOffset >= data.size) {
                         tracker.offset++
                         currentReader?.let { currentReader?.toInt() ?: throw MarcException("Incomplete character set code found following escape character.") }
@@ -212,43 +212,41 @@ class Marc8ToUnicode : CharacterConverter {
         }
     }
 
-    private fun updateCodeDateTracker(tracker: CodeDataTracker, g0Org1: Int, data: CharArray, additionalOffset: Int, multiByte: Boolean) {
-        var currentAdditionalOffset = additionalOffset
-        if (data[tracker.offset + currentAdditionalOffset] == '!' && data[tracker.offset + currentAdditionalOffset + 1] == 'E') {
-            currentAdditionalOffset++
-        } else if (data[tracker.offset + currentAdditionalOffset] == ' ') {
+    private fun updateCodeDateTracker(tracker: CodeDataTracker, g0_or_g1: Int, data: CharArray, start: Int, multiByte: Boolean) {
+        var offset = start
+        if (data[tracker.offset + offset] == '!' && data[tracker.offset + offset + 1] == 'E') { // !E = Extended Latin
+            offset++
+        } else if (data[tracker.offset + offset] == ' ') {
             currentReader?.let { currentReader?.toInt() ?: throw MarcException("Extraneous space character found within MARC8 character set escape sequence.") }
-            currentAdditionalOffset++
-        } else if ("(,)-\$!".indexOf(data[tracker.offset + currentAdditionalOffset]) != -1) {
+            offset++
+        } else if (data[tracker.offset + offset] in """(,)-$!""") {
             currentReader?.let { currentReader?.toInt() ?: throw MarcException("Extraneous intermediate character found following escape character.") }
-            currentAdditionalOffset++
+            offset++
         }
 
-        if ("34BE1NQS2".indexOf(data[tracker.offset + currentAdditionalOffset]) == -1) {
+        if (data[tracker.offset + offset] in "34BE1NQS2") {
+            if (g0_or_g1 == 0) {
+                tracker.g0 = data[tracker.offset + offset].toInt()
+            } else {
+                tracker.g1 = data[tracker.offset + offset].toInt()
+            }
+
+            tracker.offset += offset + 1
+            tracker.multiByte = multiByte
+        } else {
             tracker.offset++
             tracker.multiByte = false
 
             currentReader?.let { currentReader?.toInt() ?: throw MarcException("Unknown character set code found following escape character.") }
-        } else {
-            if (g0Org1 == 0) {
-                tracker.g0 = data[tracker.offset + currentAdditionalOffset].toInt()
-            } else {
-                tracker.g1 = data[tracker.offset + currentAdditionalOffset].toInt()
-            }
-
-            tracker.offset += currentAdditionalOffset + 1
-            tracker.multiByte = multiByte
         }
     }
 
-    // TODO - magic number and toInt() call
     private fun isEscape(c: Char): Boolean {
-        return c.toInt() == 0x1B
+        return c == ESCAPE_CHAR
     }
 
     private fun hasNext(position: Int, length: Int) = position < length -1
 
-    // TODO - magic String
     private fun loadMultiByte() {
         codeTable = CodeTable(javaClass.getResourceAsStream("/codetables.xml"))
         loadedMultiByteCodeTable = true
@@ -381,9 +379,9 @@ class Marc8ToUnicode : CharacterConverter {
                     && noneEquals(data, offset, offset + 3, '\u0020')
                     && (getMultiByteCharacter(makeMultiByte(data[offset + 0].toInt(), data[offset + 1].toInt(), data[offset + 2].toInt())) == CODE_TABLE_CHARACTER_NOT_FOUND || getMultiByteCharacter(makeMultiByte(data[offset + 3].toInt(), data[offset + 4].toInt(), data[offset + 5].toInt())) == CODE_TABLE_CHARACTER_NOT_FOUND)
                     && getMultiByteCharacter(makeMultiByte(data[offset + 2].toInt(), data[offset + 3].toInt(), data[offset + 4].toInt())) != CODE_TABLE_CHARACTER_NOT_FOUND
-                    && noneEquals(data, offset, offset + 5, '\u001B')
+                    && noneEquals(data, offset, offset + 5, ESCAPE_CHAR)
                     && noneInRange(data, offset, offset + 5, '\u0080', '\u00FF')
-                    && !nextEscapeIsMultiByte(data, offset, data.size)) {
+                    && !nextEscapeIsMultiByte(data, offset)) {
                     val multiByteString = getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), '['.toInt(), data[offset + 1].toInt())) +
                             getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), ']'.toInt(), data[offset + 1].toInt())) +
                             getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), data[offset + 1].toInt(), '['.toInt())) +
@@ -406,9 +404,9 @@ class Marc8ToUnicode : CharacterConverter {
                     && noneEquals(data, offset, offset + 3, '\u0020')
                     && (getMultiByteCharacter(makeMultiByte(data[offset + 0].toInt(), data[offset + 1].toInt(), data[offset + 2].toInt())) == CODE_TABLE_CHARACTER_NOT_FOUND || getMultiByteCharacter(makeMultiByte(data[offset + 3].toInt(), data[offset + 4].toInt(), data[offset + 5].toInt())) == CODE_TABLE_CHARACTER_NOT_FOUND)
                     && getMultiByteCharacter(makeMultiByte(data[offset + 4].toInt(), data[offset + 5].toInt(), data[offset + 6].toInt())) != CODE_TABLE_CHARACTER_NOT_FOUND
-                    && noneEquals(data, offset, offset + 6, '\u001B')
+                    && noneEquals(data, offset, offset + 6, ESCAPE_CHAR)
                     && noneInRange(data, offset, offset + 6, '\u0080', '\u00FF')
-                    && !nextEscapeIsMultiByte(data, offset, data.size)) {
+                    && !nextEscapeIsMultiByte(data, offset)) {
                     val multiByteString = getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), '['.toInt(), data[offset + 1].toInt())) +
                             getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), ']'.toInt(), data[offset + 1].toInt())) +
                             getMultiByteCharacterString(makeMultiByte(data[offset].toInt(), data[offset + 1].toInt(), '['.toInt())) +
@@ -473,28 +471,26 @@ class Marc8ToUnicode : CharacterConverter {
         }
     }
 
-    private fun getRawMultiByteLength(data: CharArray, originalOffset: Int): Int {
-        var offset = originalOffset
-        var length = 0
-
-        while (offset < data.size && data[offset].toInt() != 0x1b) {
-            offset++
-            length++
+    private fun getRawMultiByteLength(data: CharArray, start: Int): Int {
+        for (offset in start..data.lastIndex) {
+            if (data[offset] == ESCAPE_CHAR) {
+                return offset - start
+            }
         }
-        return length
+        return data.size - start
     }
 
-    private fun getNumberOfSpacesInMultiByteLength(data: CharArray, originalOffset: Int): Int {
-        var offset = originalOffset
+    private fun getNumberOfSpacesInMultiByteLength(data: CharArray, start: Int): Int {
         var count = 0
-
-        while (offset < data.size && data[offset] != '\u001B') {
-            if (data[offset] == ' ') {
+        for (offset in start..data.lastIndex) {
+            if (data[offset] == ESCAPE_CHAR) {
+                break
+            } else if (data[offset] == ' ') {
                 count++
             }
-            offset++
         }
         return count
+
     }
 
     private fun makeMultiByte(first: Int, second: Int, third: Int): Int {
@@ -514,10 +510,6 @@ class Marc8ToUnicode : CharacterConverter {
         return true
     }
 
-    private fun allCharactersInRangeAreASCII(data: CharArray, start: Int, end: Int): Boolean {
-        return data.copyOfRange(start, end).all { it in '\u0000'..'\u007F' }
-    }
-
     private fun noneInRange(data: CharArray, start: Int, end: Int, lowValue: Char, highValue: Char): Boolean {
         for (offset in start..end) {
             if (data[offset] in lowValue..highValue) {
@@ -527,9 +519,9 @@ class Marc8ToUnicode : CharacterConverter {
         return true
     }
 
-    private fun nextEscapeIsMultiByte(data: CharArray, start: Int, length: Int): Boolean {
-        for (offset in start until length - 1) {
-            if (data[offset] == 0x1b.toChar()) {
+    private fun nextEscapeIsMultiByte(data: CharArray, start: Int): Boolean {
+        for (offset in start..data.lastIndex) {
+            if (data[offset] == ESCAPE_CHAR && offset < data.lastIndex) {
                 return if (data[offset + 1] == '$') {
                     true
                 } else {
@@ -548,7 +540,6 @@ class Marc8ToUnicode : CharacterConverter {
         }
     }
 
-    // TODO - magic numbers
     private class CodeDataTracker {
         var offset = 0
         var g0 = BASIC_LATIN_ISO_CODE
@@ -556,7 +547,7 @@ class Marc8ToUnicode : CharacterConverter {
         var multiByte = false
 
         override fun toString(): String {
-            return "Offset: " + offset + " G0: " + Integer.toHexString(g0) + " G1: " + Integer.toHexString(g1) + " MultiByte: " + multiByte;
+            return "Offset: " + offset + " G0: " + Integer.toHexString(g0) + " G1: " + Integer.toHexString(g1) + " MultiByte: " + multiByte
         }
     }
 
@@ -576,6 +567,7 @@ class Marc8ToUnicode : CharacterConverter {
         private const val ASCII_DEFAULT_ISO_CODE = 0x73
         private const val SPACE_CODE = 0x20
         private const val SPACE_CHAR = SPACE_CODE.toChar()
+        private const val ESCAPE_CHAR = '\u001B'
 
     }
 }

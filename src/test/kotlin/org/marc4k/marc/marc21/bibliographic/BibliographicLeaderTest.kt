@@ -7,7 +7,6 @@ import org.junit.jupiter.api.assertThrows
 import org.marc4k.marc.marc21.CharacterCodingScheme
 
 internal class BibliographicLeaderTest {
-
     @Test
     fun `test constructor()`() {
         val given = BibliographicLeader()

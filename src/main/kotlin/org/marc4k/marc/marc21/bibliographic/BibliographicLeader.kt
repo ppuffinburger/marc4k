@@ -8,32 +8,16 @@ class BibliographicLeader: Leader {
     var recordLength by Delegates.observable(_recordLength) {
             _, _, newValue -> _recordLength = newValue
     }
-    var recordStatus by Delegates.observable(
-        RecordStatus.fromValue(
-            _recordStatus
-        )
-    ) {
+    var recordStatus by Delegates.observable(RecordStatus.fromValue(_recordStatus)) {
             _, _, newValue -> _recordStatus = newValue.value
     }
-    var typeOfRecord by Delegates.observable(
-        TypeOfRecord.fromValue(
-            _typeOfRecord
-        )
-    ) {
+    var typeOfRecord by Delegates.observable(TypeOfRecord.fromValue(_typeOfRecord)) {
             _, _, newValue -> _typeOfRecord = newValue.value
     }
-    var bibliographicLevel by Delegates.observable(
-        BibliographicLevel.fromValue(
-            _implementationDefined1[0]
-        )
-    ) {
+    var bibliographicLevel by Delegates.observable(BibliographicLevel.fromValue(_implementationDefined1[0])) {
             _, _, newValue -> _implementationDefined1[0] = newValue.value
     }
-    var typeOfControl by Delegates.observable(
-        TypeOfControl.fromValue(
-            _implementationDefined1[1]
-        )
-    ) {
+    var typeOfControl by Delegates.observable(TypeOfControl.fromValue(_implementationDefined1[1])) {
             _, _, newValue -> _implementationDefined1[1] = newValue.value
     }
     var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_characterCodingScheme)) {
@@ -48,25 +32,13 @@ class BibliographicLeader: Leader {
     var baseAddressOfData by Delegates.observable(_baseAddressOfData) {
             _, _, newValue -> _baseAddressOfData = newValue
     }
-    var encodingLevel by Delegates.observable(
-        EncodingLevel.fromValue(
-            _implementationDefined2[0]
-        )
-    ) {
+    var encodingLevel by Delegates.observable(EncodingLevel.fromValue(_implementationDefined2[0])) {
             _, _, newValue -> _implementationDefined2[0] = newValue.value
     }
-    var descriptiveCatalogingForm by Delegates.observable(
-        DescriptiveCatalogingForm.fromValue(
-            _implementationDefined2[1]
-        )
-    ) {
+    var descriptiveCatalogingForm by Delegates.observable(DescriptiveCatalogingForm.fromValue(_implementationDefined2[1])) {
             _, _, newValue -> _implementationDefined2[1] = newValue.value
     }
-    var multipartResourceRecordLevel by Delegates.observable(
-        MultipartResourceRecordLevel.fromValue(
-            _implementationDefined2[2]
-        )
-    ) {
+    var multipartResourceRecordLevel by Delegates.observable(MultipartResourceRecordLevel.fromValue(_implementationDefined2[2])) {
             _, _, newValue -> _implementationDefined2[2] = newValue.value
     }
     var lengthOfTheLengthOfFieldPortion by Delegates.observable(_entryMap[0]) {
@@ -108,10 +80,8 @@ class BibliographicLeader: Leader {
         characterCodingScheme = CharacterCodingScheme.fromValue(data[9])
         baseAddressOfData = data.substring(12, 17).toInt()
         encodingLevel = getEncodingLevel(data[17])
-        descriptiveCatalogingForm =
-            DescriptiveCatalogingForm.fromValue(data[18])
-        multipartResourceRecordLevel =
-            MultipartResourceRecordLevel.fromValue(data[19])
+        descriptiveCatalogingForm = DescriptiveCatalogingForm.fromValue(data[18])
+        multipartResourceRecordLevel = MultipartResourceRecordLevel.fromValue(data[19])
     }
 
     private fun getEncodingLevel(encodingLevel: Char): EncodingLevel {
