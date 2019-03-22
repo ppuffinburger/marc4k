@@ -31,20 +31,17 @@ class CodeTable {
         }
     }
 
-    fun getChar(marc8Code: Marc8Code, isoCode: IsoCode): Char {
+    fun getChar(marc8Code: Marc8Code, isoCode: IsoCode): Char? {
         if (marc8Code == 0x20) {
             return marc8Code.toChar()
         } else {
             characterSets[isoCode]?.let {
                 return it[marc8Code]
                     ?: it[if (marc8Code < 0x80) marc8Code + 0x80 else marc8Code - 0x80]
-                    ?: CODE_TABLE_CHARACTER_NOT_FOUND
             } ?: return marc8Code.toChar()
         }
     }
 }
-
-internal const val CODE_TABLE_CHARACTER_NOT_FOUND = 0.toChar()
 
 typealias IsoCode = Int
 typealias Marc8Code = Int

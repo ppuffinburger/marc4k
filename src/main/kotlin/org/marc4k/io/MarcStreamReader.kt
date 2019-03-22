@@ -1,16 +1,20 @@
 package org.marc4k.io
 
 import org.marc4k.MarcException
-import org.marc4k.converter.Marc8ToUnicode
+import org.marc4k.converter.CharacterConverter
+import org.marc4k.converter.ConversionError
+import org.marc4k.converter.NoErrors
+import org.marc4k.converter.WithErrors
+import org.marc4k.converter.marc8.Marc8ToUnicode
 import org.marc4k.marc.*
 import java.io.*
 import java.nio.charset.Charset
 import java.util.function.Consumer
 
-class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8859-1") : MarcReader {
+class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8859-1", private val converter: CharacterConverter? = null) : MarcReader {
     private val input: DataInputStream = DataInputStream(if (input.markSupported()) input else BufferedInputStream(input))
     private val overrideEncoding: Boolean
-    private lateinit var marc8ToUnicode: Marc8ToUnicode
+    private val recordErrors = mutableListOf<ConversionError>()
 
     init {
         encoding = parseEncoding(encoding)
@@ -32,6 +36,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
     }
 
     override fun next(): MarcRecord {
+        recordErrors.clear()
         try {
             input.mark(LEADER_RECORD_LENGTH_LENGTH)
             val recordLengthBytes = ByteArray(LEADER_RECORD_LENGTH_LENGTH)
@@ -57,9 +62,12 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         input.close()
     }
 
+    fun hasErrors() = recordErrors.isNotEmpty()
+
+    fun getErrors() = recordErrors.toList()
+
     private fun parseEncoding(encoding: String): String {
         return when (encoding.toUpperCase()) {
-            "MARC8", "MARC-8" -> "MARC8"
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> "ISO-8859-1"
             "UTF8", "UTF-8" -> "UTF8"
             else -> encoding
@@ -130,12 +138,12 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
     }
 
     private fun parseFields(recordBytes: ByteArray, directoryEntries: ArrayList<Triple<String, Int, Int>>, record: Record) {
-        for (entry in directoryEntries) {
+        for ((index, entry) in directoryEntries.withIndex()) {
             if (entry.first.startsWith("00")) {
                 if (recordBytes[entry.second + entry.third - 1] != FIELD_TERMINATOR_BYTE) {
                     throw MarcException("Expected field terminator at end of field")
                 }
-                record.controlFields.add(ControlField(entry.first, getDataAsString(recordBytes.copyOfRange(entry.third, entry.third + entry.second - 1))))
+                record.controlFields.add(ControlField(entry.first, getDataAsString(index, entry.first, recordBytes.copyOfRange(entry.third, entry.third + entry.second - 1))))
             } else {
                 val indicator1 = recordBytes[entry.third].toChar()
                 val indicator2 = recordBytes[entry.third + 1].toChar()
@@ -143,6 +151,8 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
                     record.dataFields.add(DataField(entry.first, indicator1, indicator2).apply {
                         subfields.addAll(
                             parseSubfields(
+                                index,
+                                entry.first,
                                 recordBytes.copyOfRange(
                                     entry.third + 2,
                                     entry.third + entry.second
@@ -161,7 +171,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         }
     }
 
-    private fun parseSubfields(subfieldsBytes: ByteArray): ArrayList<Subfield> {
+    private fun parseSubfields(fieldIndex: Int, fieldTag: String, subfieldsBytes: ByteArray): ArrayList<Subfield> {
         val subfields = arrayListOf<Subfield>()
 
         subfieldsBytes.inputStream().apply {
@@ -177,7 +187,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
                         if (name != FIELD_TERMINATOR) {
                             val data = ByteArray(getSubfieldLength(this))
                             read(data)
-                            subfields.add(Subfield(name.toChar(), getDataAsString(data)))
+                            subfields.add(Subfield(name.toChar(), getDataAsString(fieldIndex, fieldTag, data)))
                         }
                     }
                 }
@@ -205,27 +215,63 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         }
     }
 
-    private fun getDataAsString(bytes: ByteArray) = when (encoding) {
-        "MARC8" -> {
-            if (!::marc8ToUnicode.isInitialized) {
-                marc8ToUnicode = Marc8ToUnicode()
+    private fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
+        if (converter != null) {
+            val converterResult = converter.convert(bytes)
+            return when(converterResult) {
+                is NoErrors -> converterResult.conversion
+                is WithErrors -> {
+                    recordErrors += converterResult.errors
+                    converterResult.conversion
+                }
             }
-            marc8ToUnicode.convert(bytes)
-        }
-        "UTF8" -> {
-            bytes.toString(Charsets.UTF_8)
-        }
-        "ISO-8859-1" -> {
-            bytes.toString(Charsets.ISO_8859_1)
-        }
-        else -> {
-            try {
-                bytes.toString(Charset.forName(encoding))
-            } catch (e: UnsupportedEncodingException) {
-                throw MarcException("Unsupported encoding", e)
+        } else {
+            return when(encoding) {
+                "UTF8" -> {
+                    bytes.toString(Charsets.UTF_8)
+                }
+                "ISO-8859-1" -> {
+                    bytes.toString(Charsets.ISO_8859_1)
+                }
+                else -> {
+                    try {
+                        bytes.toString(Charset.forName(encoding))
+                    } catch (e: UnsupportedEncodingException) {
+                        throw MarcException("Unsupported encoding", e)
+                    }
+                }
             }
         }
     }
+
+//    private fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray) = when (encoding) {
+//        "MARC8" -> {
+//            if (!::marc8ToUnicode.isInitialized) {
+//                marc8ToUnicode = Marc8ToUnicode()
+//            }
+//            val result = marc8ToUnicode.convert(bytes)
+//            when(result) {
+//                is NoErrors -> result.conversion
+//                is WithErrors -> {
+//                    recordErrors += result.errors
+//                    result.conversion
+//                }
+//            }
+//        }
+//        "UTF8" -> {
+//            bytes.toString(Charsets.UTF_8)
+//        }
+//        "ISO-8859-1" -> {
+//            bytes.toString(Charsets.ISO_8859_1)
+//        }
+//        else -> {
+//            try {
+//                bytes.toString(Charset.forName(encoding))
+//            } catch (e: UnsupportedEncodingException) {
+//                throw MarcException("Unsupported encoding", e)
+//            }
+//        }
+//    }
 
     companion object {
         private const val LEADER_LENGTH = 24
@@ -249,5 +295,24 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
             joiner, 8D(hex) in MARC-8 and 200D (hex) in Unicode encoding
             nonjoiner, 8E(hex) in MARC-8 and 200C (hex) in Unicode encoding.
          */
+    }
+}
+
+fun main() {
+//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/marc4jrecords/bad_too_long_plus_2.mrc"
+//    val filename = "/Users/philip/Downloads/UnicodeTest.mrc"
+//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/records/MARC8_bib_records.mrc"
+    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/records/MARC8_auth_record.mrc"
+
+    MarcStreamReader(FileInputStream(filename), converter = Marc8ToUnicode(translateNcr = true)).use {
+        for (record in it) {
+            if (it.hasErrors()) {
+                println(record)
+                println(it.getErrors())
+                println()
+            } else {
+                println(record)
+            }
+        }
     }
 }

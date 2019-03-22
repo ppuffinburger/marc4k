@@ -6,7 +6,8 @@ import org.xml.sax.helpers.DefaultHandler
 import java.util.*
 
 class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCallback) : DefaultHandler() {
-    private var currentCodeData: CodeData = CodeData(-1)
+    private var currentIsoCode: IsoCode = -1
+    private var currentCodeData: CodeData = CodeData()
 
     private val currentCharacterSet = hashMapOf<Marc8Code, Char>()
     private val currentCombiningCodes = ArrayList<Marc8Code>()
@@ -20,8 +21,11 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
                 currentCharacterSet.clear()
                 currentCombiningCodes.clear()
                 attributes?.getValue("ISOcode")?.let {
-                    currentCodeData = CodeData(it.toInt(16))
+                    currentIsoCode = it.toInt(16)
                 } ?: throw MarcException("CodeTable does not contain an ISOcode attribute")
+            }
+            "code" -> {
+                currentCodeData = CodeData()
             }
         }
     }
@@ -29,7 +33,7 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
     override fun endElement(uri: String?, localName: String?, qName: String?) {
         when (qName) {
             "characterSet" -> {
-                codeTableHandlerCallback.updateIsoCodeMaps(currentCodeData.isoCode, currentCharacterSet.toMap(), currentCombiningCodes.toList())
+                codeTableHandlerCallback.updateIsoCodeMaps(currentIsoCode, currentCharacterSet.toMap(), currentCombiningCodes.toList())
             }
             "code" -> {
                 currentCharacterSet[currentCodeData.marc8Code] = currentCodeData.ucs
@@ -63,7 +67,7 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
         }
     }
 
-    private class CodeData(val isoCode: IsoCode) {
+    private class CodeData() {
         var marc8Code: Marc8Code = 0x00
         var ucs: Char = '\u0000'
         var isCombining = false

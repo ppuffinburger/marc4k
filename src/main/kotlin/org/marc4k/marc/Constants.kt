@@ -1,6 +1,11 @@
 package org.marc4k.marc
 
+const val RECORD_TERMINATOR = '\u001D'
+const val FIELD_TERMINATOR = '\u001E'
 const val SUBFIELD_DELIMITER = '\u001F'
+
+const val ESCAPE_CHARACTER = '\u001B'
+const val SPACE_CHARACTER = '\u0020'
 
 const val NON_SORT_BEGIN = 0x88
 const val NON_SORT_END = 0x89
