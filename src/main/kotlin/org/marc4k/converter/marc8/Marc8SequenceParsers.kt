@@ -149,13 +149,13 @@ internal class Marc8EscapeSequenceParser {
 internal class CombiningDoubleInvertedBreveParser {
     fun parse(tracker: Marc8Tracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
-            if (firstHalf == '\u00EB') {
+            if (firstHalf == COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF) {
                 tracker.pop()?.let { firstLatin ->
-                    if (firstLatin in 'a'..'z' || firstLatin in 'A'..'Z') {
+                    if (firstLatin.isLetterOrDigit()) {
                         tracker.pop()?.let { secondHalf ->
-                            if (secondHalf == '\u00EC') {
+                            if (secondHalf == COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF) {
                                 tracker.pop()?.let { secondLatin ->
-                                    if (secondLatin in 'a'..'z' || secondLatin in 'A'..'Z') {
+                                    if (secondLatin.isLetterOrDigit()) {
                                         tracker.commit()
                                         return ParsedData("$firstLatin\u0361$secondLatin")
                                     }
@@ -166,18 +166,24 @@ internal class CombiningDoubleInvertedBreveParser {
                 }
             }
         }
+        tracker.rollback()
         return Error("Unable to parse Double Inverted Breve")
+    }
+
+    companion object {
+        const val COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF = '\u00EB'
+        const val COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF = '\u00EC'
     }
 }
 
 internal class CombiningDoubleTildeParser {
     fun parse(tracker: Marc8Tracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
-            if (firstHalf == '\u00FA') {
+            if (firstHalf == COMBINING_DOUBLE_TILDE_FIRST_HALF) {
                 tracker.pop()?.let { firstLatin ->
                     if (firstLatin in 'a'..'z' || firstLatin in 'A'..'Z') {
                         tracker.pop()?.let { secondHalf ->
-                            if (secondHalf == '\u00FB') {
+                            if (secondHalf == COMBINING_DOUBLE_TILDE_SECOND_HALF) {
                                 tracker.pop()?.let { secondLatin ->
                                     if (secondLatin in 'a'..'z' || secondLatin in 'A'..'Z') {
                                         tracker.commit()
@@ -190,7 +196,13 @@ internal class CombiningDoubleTildeParser {
                 }
             }
         }
+        tracker.rollback()
         return Error("Unable to parse Double Tilde")
+    }
+
+    companion object {
+        const val COMBINING_DOUBLE_TILDE_FIRST_HALF = '\u00FA'
+        const val COMBINING_DOUBLE_TILDE_SECOND_HALF = '\u00FB'
     }
 }
 

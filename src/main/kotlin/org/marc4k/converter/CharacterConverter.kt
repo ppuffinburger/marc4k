@@ -9,9 +9,9 @@ abstract class CharacterConverter {
     open fun outputsUnicode(): Boolean = false
 }
 
-data class ConversionError(val reason: String, val offset: Int, val surroundingData: String) {
+data class ConversionError(val reason: String, val surroundingData: String) {
     override fun toString(): String {
-        return "reason: $reason, offset: $offset, surroundingData: $surroundingData)"
+        return "reason: $reason, surroundingData: $surroundingData)"
     }
 }
 

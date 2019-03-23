@@ -24,10 +24,10 @@ class CodeTable {
     constructor(uri: URI) : this(uri.toURL().openStream())
 
     fun isCombining(marc8Code: Marc8Code, g0: GraphicSet, g1: GraphicSet): Boolean {
-        return if (marc8Code <= 0x7E) {
-            combiningCodes[g0]?.contains(marc8Code) ?: combiningCodes[g0]?.contains(marc8Code + 0x80) ?: false
-        } else {
-            combiningCodes[g1]?.contains(marc8Code) ?: combiningCodes[g1]?.contains(marc8Code - 0x80) ?: false
+        return when (marc8Code) {
+            in 0x20..0x7E -> combiningCodes[g0]?.contains(marc8Code) ?: combiningCodes[g0]?.contains(marc8Code + 0x80) ?: false
+            in 0xA0..0xFE -> combiningCodes[g1]?.contains(marc8Code) ?: combiningCodes[g1]?.contains(marc8Code - 0x80) ?: false
+            else -> false
         }
     }
 

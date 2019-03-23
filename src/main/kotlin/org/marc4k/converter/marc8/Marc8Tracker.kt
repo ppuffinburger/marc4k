@@ -15,8 +15,6 @@ internal class Marc8Tracker(data: CharArray, var g0: IsoCode = 0x42, var g1: Iso
 
     fun isEmpty() = buffer.isEmpty()
 
-    fun isNotEmpty() = buffer.isNotEmpty()
-
     fun peek(): Char? = buffer.peek()
 
     fun pop(): Char? {
@@ -42,30 +40,31 @@ internal class Marc8Tracker(data: CharArray, var g0: IsoCode = 0x42, var g1: Iso
         rollback.clear()
     }
 
-    fun advanceToEnd() {
-        while (isNotEmpty()) {
-            pop()
-        }
-        commit()
-    }
-
     fun getSurroundingData(): String {
         val characters = with(mutableListOf<Char>()) {
             rollback.take(10 - size).forEach {
-                add(0, it)
+                add(0, if (isControlCharacter(it)) '?' else it)
             }
 
             committed.take(10 - size).forEach {
-                add(0, it)
+                add(0, if (isControlCharacter(it)) '?' else it)
             }
 
             buffer.take(20 - size).forEach {
-                add(it)
+                add(if (isControlCharacter(it)) '?' else it)
             }
 
             toList()
         }
 
         return "Hex: (${characters.joinToString(" ") { String.format("0x%02x", it.toInt()) }}) ASCII : (${characters.joinToString("")})"
+    }
+
+    private fun isControlCharacter(character: Char): Boolean {
+        return when(character) {
+            in '\u0000'..'\u001F' -> true
+            in '\u0080'..'\u009F' -> true
+            else -> false
+        }
     }
 }

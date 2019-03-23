@@ -92,4 +92,20 @@ internal class Marc8ToUnicodeTest {
         assertEquals("Ћ", (marc8ToUnicode.convert(cyrillicCapitalTshe.toCharArray()) as NoErrors).conversion)
         assertEquals("ڽ", (marc8ToUnicode.convert(arabicLetterNoonWithThreeDotsAbove.toCharArray()) as NoErrors).conversion)
     }
+
+    @Test
+    fun `test convert(CharArray) with incomplete escape sequence`() {
+        val marc8ToUnicode = Marc8ToUnicode()
+        val result = marc8ToUnicode.convert("da\u001Bta")
+        assertTrue { result is WithErrors }
+        assertEquals("data", (result as WithErrors).conversion)
+    }
+
+    @Test
+    fun `test convert(CharArray) with invalid escape sequence`() {
+        val marc8ToUnicode = Marc8ToUnicode()
+        val result = marc8ToUnicode.convert("da\u001B\u0028ta")
+        assertTrue { result is WithErrors }
+        assertEquals("da(ta", (result as WithErrors).conversion)
+    }
 }
