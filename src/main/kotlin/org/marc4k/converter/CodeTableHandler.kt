@@ -67,7 +67,7 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
         }
     }
 
-    private class CodeData() {
+    private class CodeData {
         var marc8Code: Marc8Code = 0x00
         var ucs: Char = '\u0000'
         var isCombining = false

@@ -217,8 +217,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
 
     private fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
         if (converter != null) {
-            val converterResult = converter.convert(bytes)
-            return when(converterResult) {
+            return when(val converterResult = converter.convert(bytes)) {
                 is NoErrors -> converterResult.conversion
                 is WithErrors -> {
                     recordErrors += MarcError(fieldIndex, fieldTag, converterResult.errors)
@@ -253,24 +252,11 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         private const val SUBFIELD_DELIMITER = 0x1F
         private const val RECORD_TERMINATOR_BYTE = RECORD_TERMINATOR.toByte()
         private const val FIELD_TERMINATOR_BYTE = FIELD_TERMINATOR.toByte()
-
-        /*
-            Eight characters are specifically designated as control characters for MARC 21 use:
-
-            escape character, 1B(hex) in MARC-8 and Unicode encoding
-            subfield delimiter, 1F(hex) in MARC-8 and Unicode encoding
-            field terminator, 1E(hex) in MARC-8 and Unicode encoding
-            record terminator, 1D(hex) in MARC-8 and Unicode encoding
-            non-sorting character(s) begin, 88(hex) in MARC-8 and 98(hex) in Unicode encoding
-            non-sorting character(s) end, 89(hex) in MARC-8 and 9C(hex) in Unicode encoding
-            joiner, 8D(hex) in MARC-8 and 200D (hex) in Unicode encoding
-            nonjoiner, 8E(hex) in MARC-8 and 200C (hex) in Unicode encoding.
-         */
     }
 }
 
 data class MarcError(val index: Int, val tag: String, val conversionErrors: List<ConversionError>) {
-    override fun toString() = "Index: $index Tag: $tag${System.lineSeparator()}${conversionErrors.joinToString(System.lineSeparator()) { "\t$it" }}"
+    override fun toString() = "Field Index: $index Tag: $tag${System.lineSeparator()}${conversionErrors.joinToString(System.lineSeparator()) { "\t$it" }}"
 }
 
 fun main() {

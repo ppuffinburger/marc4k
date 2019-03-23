@@ -41,7 +41,7 @@ class Marc8ToUnicode : CharacterConverter {
             val tracker = Marc8Tracker(data)
 
             loop@ while (!tracker.isEmpty()) {
-                when (tracker.peek()) {
+                when (val peeked = tracker.peek()) {
                     ESCAPE_CHARACTER -> {
                         if (!escapeSequenceParser.parse(tracker)) {
                             errors.add(createConversionError("Incomplete or invalid escape sequence.  Discarding escape character.", tracker))
@@ -63,11 +63,13 @@ class Marc8ToUnicode : CharacterConverter {
                         continue@loop
                     }
                     in C1_CONTROL_CHARACTER_RANGE -> {
-                        tracker.pop()?.let {
-                            errors.add(createConversionError("C1 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                        if (peeked !in NON_SORT_BEGIN_CHARACTER..NON_SORT_END_CHARACTER && peeked !in JOINER_CHARACTER..NON_JOINER_CHARACTER) {
+                            tracker.pop()?.let {
+                                errors.add(createConversionError("C1 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                            }
+                            tracker.commit()
+                            continue@loop
                         }
-                        tracker.commit()
-                        continue@loop
                     }
                 }
 
@@ -97,8 +99,7 @@ class Marc8ToUnicode : CharacterConverter {
                 } else if (isStartOfDiacritics(tracker)) {
                     when(tracker.peek()) {
                         COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF -> {
-                            val result = CombiningDoubleInvertedBreveParser().parse(tracker)
-                            when(result) {
+                            when(val result = CombiningDoubleInvertedBreveParser().parse(tracker)) {
                                 is ParsedData -> { this.append(result.parsedData) }
                                 is Error -> {
                                     errors.add(createConversionError("Unable to parse Combining Double Inverted Breve", tracker))
@@ -117,8 +118,7 @@ class Marc8ToUnicode : CharacterConverter {
                             tracker.commit()
                         }
                         COMBINING_DOUBLE_TILDE_FIRST_HALF -> {
-                            val result = CombiningDoubleTildeParser().parse(tracker)
-                            when(result) {
+                            when(val result = CombiningDoubleTildeParser().parse(tracker)) {
                                 is ParsedData -> { this.append(result.parsedData) }
                                 is Error -> {
                                     errors.add(createConversionError("Unable to parse Combining Double Tilde", tracker))
@@ -257,6 +257,10 @@ class Marc8ToUnicode : CharacterConverter {
 
     companion object {
         private const val CJK_ISO_CODE = 0x31
+        private const val NON_SORT_BEGIN_CHARACTER = '\u0088'
+        private const val NON_SORT_END_CHARACTER = '\u0089'
+        private const val JOINER_CHARACTER = '\u008D'
+        private const val NON_JOINER_CHARACTER = '\u008E'
         private val C0_CONTROL_CHARACTER_RANGE = '\u0000'..'\u001F'
         private val C1_CONTROL_CHARACTER_RANGE = '\u0080'..'\u009F'
     }

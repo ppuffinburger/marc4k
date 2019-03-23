@@ -2,7 +2,7 @@ package org.marc4k.marc.marc21.bibliographic
 
 import org.marc4k.marc.DataField
 import org.marc4k.marc.Record
-import org.marc4k.marc.SUBFIELD_DELIMITER
+import org.marc4k.marc.SUBFIELD_DELIMITER_CHARACTER
 import org.marc4k.marc.marc21.Marc21Record
 import java.util.*
 
@@ -45,7 +45,7 @@ class BibliographicRecord : Record(), Marc21Record {
 
     fun isRda(): Boolean {
         if (leader.descriptiveCatalogingForm == DescriptiveCatalogingForm.ISBD_PUNCTUATION_INCLUDED) {
-            return dataFields.firstOrNull { it.tag == "040" }?.getData()?.contains("${SUBFIELD_DELIMITER}erda", ignoreCase = false) ?: false
+            return dataFields.firstOrNull { it.tag == "040" }?.getData()?.contains("${SUBFIELD_DELIMITER_CHARACTER}erda", ignoreCase = false) ?: false
         }
         return false
     }
