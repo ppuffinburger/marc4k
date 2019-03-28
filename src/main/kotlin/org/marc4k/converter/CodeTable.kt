@@ -11,8 +11,8 @@ class CodeTable {
 
     constructor(inputStream: InputStream) {
         when (val result = CodeTableXmlParser().parse(inputStream)) {
-            is ParseResult.Failure -> throw MarcException("Unable to process the Code Table", result.error)
-            is ParseResult.Success -> {
+            is CodeTableParseResult.Failure -> throw MarcException("Unable to process the Code Table", result.error)
+            is CodeTableParseResult.Success -> {
                 characterSets = result.characterSets
                 combiningCodes = result.combiningCodes
             }

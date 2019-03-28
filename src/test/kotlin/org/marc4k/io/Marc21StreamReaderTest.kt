@@ -1,8 +1,9 @@
 package org.marc4k.io
 
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
-import org.junit.jupiter.api.assertThrows
 import org.marc4k.MarcException
 import org.marc4k.marc.marc21.authority.AuthorityRecord
 import org.marc4k.marc.marc21.bibliographic.BibliographicRecord
@@ -11,7 +12,6 @@ import org.marc4k.marc.marc21.community.CommunityRecord
 import org.marc4k.marc.marc21.holdings.HoldingsRecord
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-import kotlin.test.assertEquals
 
 internal class Marc21StreamReaderTest {
     private val testMarc21TypeData = listOf(
@@ -43,7 +43,7 @@ internal class Marc21StreamReaderTest {
     fun `test valid Marc21 record types`() = testMarc21TypeData.map { (typeOfRecord, expected) ->
         Marc21StreamReader(MarcStreamReader(createByteStream(typeOfRecord))).use {
             DynamicTest.dynamicTest("when TypeOfRecord is '$typeOfRecord' then expect a '${expected.simpleName}") {
-                assertEquals(expected, it.next()::class)
+                assertThat(it.next()).isInstanceOf(expected.java)
             }
         }
     }
@@ -52,7 +52,7 @@ internal class Marc21StreamReaderTest {
     fun `test invalid Marc21 record types`() = listOf('b', 'h', 'l', 's').map { typeOfRecord ->
         Marc21StreamReader(MarcStreamReader(createByteStream(typeOfRecord))).use {
             DynamicTest.dynamicTest("when TypeOfRecord is '$typeOfRecord' then throw an exception") {
-                assertThrows<MarcException> { it.next() }
+                assertThatExceptionOfType(MarcException::class.java).isThrownBy { it.next() }
             }
         }
     }

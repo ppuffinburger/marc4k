@@ -1,20 +1,22 @@
 package org.marc4k.converter.marc8
 
+import org.marc4k.ESCAPE_CHARACTER
+import org.marc4k.SPACE_CHARACTER
 import org.marc4k.converter.*
 import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF
 import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF
 import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_FIRST_HALF
 import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_SECOND_HALF
-import org.marc4k.marc.ESCAPE_CHARACTER
-import org.marc4k.marc.SPACE_CHARACTER
 import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
 
 class Marc8ToUnicode : CharacterConverter {
     private val translateNcr: Boolean
-    private val ncrParser = NcrParser()
+    private val ncrTranslator = NcrTranslator()
     private val escapeSequenceParser = Marc8EscapeSequenceParser()
+    private val combiningDoubleInvertedBreveParser = CombiningDoubleInvertedBreveParser()
+    private val combiningDoubleTildeParser = CombiningDoubleTildeParser()
 
     private var codeTable: CodeTable
     private var loadedMultiByteCodeTable = false
@@ -63,13 +65,30 @@ class Marc8ToUnicode : CharacterConverter {
                         continue@loop
                     }
                     in C1_CONTROL_CHARACTER_RANGE -> {
-                        if (peeked !in NON_SORT_BEGIN_CHARACTER..NON_SORT_END_CHARACTER && peeked !in JOINER_CHARACTER..NON_JOINER_CHARACTER) {
-                            tracker.pop()?.let {
-                                errors.add(createConversionError("C1 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                        when(peeked) {
+                            NON_SORT_BEGIN_CHARACTER -> {
+                                tracker.pop()
+                                append(START_OF_STRING_CHARACTER)
                             }
-                            tracker.commit()
-                            continue@loop
+                            NON_SORT_END_CHARACTER -> {
+                                tracker.pop()
+                                append(STRING_TERMINATOR_CHARACTER)
+                            }
+                            JOINER_CHARACTER -> {
+                                tracker.pop()
+                                append(ZERO_WIDTH_JOINER_CHARACTER)
+                            }
+                            NON_JOINER_CHARACTER -> {
+                                tracker.pop()
+                                append(ZERO_WIDTH_NON_JOINER_CHARACTER)
+                            }
+                            else -> {
+                                tracker.pop()?.let {
+                                    errors.add(createConversionError("C1 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                                }
+                            }
                         }
+                        continue@loop
                     }
                 }
 
@@ -99,10 +118,10 @@ class Marc8ToUnicode : CharacterConverter {
                 } else if (isStartOfDiacritics(tracker)) {
                     when(tracker.peek()) {
                         COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF -> {
-                            when(val result = CombiningDoubleInvertedBreveParser().parse(tracker)) {
-                                is ParsedData -> { this.append(result.parsedData) }
-                                is Error -> {
-                                    errors.add(createConversionError("Unable to parse Combining Double Inverted Breve", tracker))
+                            when(val result = combiningDoubleInvertedBreveParser.parse(tracker)) {
+                                is CombiningParserResult.Success -> { this.append(result.result) }
+                                is CombiningParserResult.Failure -> {
+                                    errors.add(createConversionError(result.error, tracker))
                                     // TODO : should I just replace or try to fix instead of discarding?
                                     tracker.pop()
                                     tracker.commit()
@@ -118,10 +137,10 @@ class Marc8ToUnicode : CharacterConverter {
                             tracker.commit()
                         }
                         COMBINING_DOUBLE_TILDE_FIRST_HALF -> {
-                            when(val result = CombiningDoubleTildeParser().parse(tracker)) {
-                                is ParsedData -> { this.append(result.parsedData) }
-                                is Error -> {
-                                    errors.add(createConversionError("Unable to parse Combining Double Tilde", tracker))
+                            when(val result = combiningDoubleTildeParser.parse(tracker)) {
+                                is CombiningParserResult.Success -> { this.append(result.result) }
+                                is CombiningParserResult.Failure -> {
+                                    errors.add(createConversionError(result.error, tracker))
                                     // TODO : should I just replace or try to fix instead of discarding?
                                     tracker.pop()
                                     tracker.commit()
@@ -148,7 +167,7 @@ class Marc8ToUnicode : CharacterConverter {
                 } else {
                     tracker.pop()?.let { marc8 ->
                         getChar(marc8.toInt(), tracker).let { character ->
-                            val toAppend = character ?: Fixes.replaceKnownMarc8EncodingIssues(marc8)
+                            val toAppend = character ?: Marc8Fixes.replaceKnownMarc8EncodingIssues(marc8)
 
                             if (toAppend == null) {
                                 errors.add(createConversionError("Unknown MARC8 character found: ${String.format("0x%02x", marc8.toInt())}", tracker))
@@ -170,12 +189,12 @@ class Marc8ToUnicode : CharacterConverter {
             toString()
         }
 
-        val conversion = if (translateNcr) ncrParser.parse(convertedString) else convertedString
+        val conversion = if (translateNcr) ncrTranslator.parse(convertedString) else convertedString
 
         return if (errors.isEmpty()) {
-            NoErrors(conversion)
+            CharacterConverterResult.Success(conversion)
         } else {
-            WithErrors(conversion, errors)
+            CharacterConverterResult.WithErrors(conversion, errors)
         }
     }
 
@@ -234,10 +253,10 @@ class Marc8ToUnicode : CharacterConverter {
     }
 
     private fun getChar(marc8Code: Marc8Code, tracker: Marc8Tracker): Char? {
-        return if (marc8Code <= 0x7E) {
-            codeTable.getChar(marc8Code, tracker.g0)
-        } else {
-            codeTable.getChar(marc8Code, tracker.g1)
+        return when(marc8Code) {
+            in 0x20..0x7E -> codeTable.getChar(marc8Code, tracker.g0)
+            in 0xA0..0xFE -> codeTable.getChar(marc8Code, tracker.g1)
+            else -> null
         }
     }
 
@@ -252,7 +271,7 @@ class Marc8ToUnicode : CharacterConverter {
     }
 
     private fun createConversionError(reason: String, tracker: Marc8Tracker): ConversionError {
-        return ConversionError(reason, tracker.getSurroundingData())
+        return ConversionError(reason, tracker.getEnclosingData())
     }
 
     companion object {
@@ -261,6 +280,10 @@ class Marc8ToUnicode : CharacterConverter {
         private const val NON_SORT_END_CHARACTER = '\u0089'
         private const val JOINER_CHARACTER = '\u008D'
         private const val NON_JOINER_CHARACTER = '\u008E'
+        private const val START_OF_STRING_CHARACTER = '\u0098'
+        private const val STRING_TERMINATOR_CHARACTER = '\u009C'
+        private const val ZERO_WIDTH_JOINER_CHARACTER = '\u200D'
+        private const val ZERO_WIDTH_NON_JOINER_CHARACTER = '\u200C'
         private val C0_CONTROL_CHARACTER_RANGE = '\u0000'..'\u001F'
         private val C1_CONTROL_CHARACTER_RANGE = '\u0080'..'\u009F'
     }

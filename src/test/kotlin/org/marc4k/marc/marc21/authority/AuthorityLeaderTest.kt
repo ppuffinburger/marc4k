@@ -1,9 +1,9 @@
 package org.marc4k.marc.marc21.authority
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.assertThrows
 import org.marc4k.marc.marc21.CharacterCodingScheme
 
 internal class AuthorityLeaderTest {
@@ -39,7 +39,7 @@ internal class AuthorityLeaderTest {
 
     @Test
     fun `test constructor(String) throws`() {
-        assertThrows<IllegalArgumentException> { AuthorityLeader("12345nz  a2254321nc 4500X") }
+        assertThatIllegalArgumentException().isThrownBy { AuthorityLeader("12345nz  a2254321nc 4500X") }
     }
 
     @Test

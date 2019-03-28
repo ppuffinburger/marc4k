@@ -1,6 +1,6 @@
 package org.marc4k.converter.marc8
 
-import org.marc4k.marc.ESCAPE_CHARACTER
+import org.marc4k.ESCAPE_CHARACTER
 
 internal class Marc8EscapeSequenceParser {
     fun parse(tracker: Marc8Tracker) = parseTechnique1EscapeSequence(tracker) || parseTechnique2EscapeSequence(tracker)
@@ -150,14 +150,14 @@ internal class CombiningDoubleInvertedBreveParser {
     fun parse(tracker: Marc8Tracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
             if (firstHalf == COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF) {
-                tracker.pop()?.let { firstLatin ->
-                    if (firstLatin.isLetterOrDigit()) {
+                tracker.pop()?.let { firstCharacter ->
+                    if (firstCharacter.isLetterOrDigit()) {
                         tracker.pop()?.let { secondHalf ->
                             if (secondHalf == COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF) {
-                                tracker.pop()?.let { secondLatin ->
-                                    if (secondLatin.isLetterOrDigit()) {
+                                tracker.pop()?.let { secondCharacter ->
+                                    if (secondCharacter.isLetterOrDigit()) {
                                         tracker.commit()
-                                        return ParsedData("$firstLatin\u0361$secondLatin")
+                                        return CombiningParserResult.Success("$firstCharacter$COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER$secondCharacter")
                                     }
                                 }
                             }
@@ -167,12 +167,13 @@ internal class CombiningDoubleInvertedBreveParser {
             }
         }
         tracker.rollback()
-        return Error("Unable to parse Double Inverted Breve")
+        return CombiningParserResult.Failure("Unable to parse Double Inverted Breve")
     }
 
     companion object {
         const val COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF = '\u00EB'
         const val COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF = '\u00EC'
+        const val COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER = '\u0361'
     }
 }
 
@@ -180,14 +181,14 @@ internal class CombiningDoubleTildeParser {
     fun parse(tracker: Marc8Tracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
             if (firstHalf == COMBINING_DOUBLE_TILDE_FIRST_HALF) {
-                tracker.pop()?.let { firstLatin ->
-                    if (firstLatin in 'a'..'z' || firstLatin in 'A'..'Z') {
+                tracker.pop()?.let { firstCharacter ->
+                    if (firstCharacter.isLetterOrDigit()) {
                         tracker.pop()?.let { secondHalf ->
                             if (secondHalf == COMBINING_DOUBLE_TILDE_SECOND_HALF) {
-                                tracker.pop()?.let { secondLatin ->
-                                    if (secondLatin in 'a'..'z' || secondLatin in 'A'..'Z') {
+                                tracker.pop()?.let { secondCharacter ->
+                                    if (secondCharacter.isLetterOrDigit()) {
                                         tracker.commit()
-                                        return ParsedData("$firstLatin\u0360$secondLatin")
+                                        return CombiningParserResult.Success("$firstCharacter$COMBINING_DOUBLE_TILDE_CHARACTER$secondCharacter")
                                     }
                                 }
                             }
@@ -197,15 +198,17 @@ internal class CombiningDoubleTildeParser {
             }
         }
         tracker.rollback()
-        return Error("Unable to parse Double Tilde")
+        return CombiningParserResult.Failure("Unable to parse Double Tilde")
     }
 
     companion object {
         const val COMBINING_DOUBLE_TILDE_FIRST_HALF = '\u00FA'
         const val COMBINING_DOUBLE_TILDE_SECOND_HALF = '\u00FB'
+        const val COMBINING_DOUBLE_TILDE_CHARACTER = '\u0360'
     }
 }
 
-sealed class CombiningParserResult
-data class ParsedData(val parsedData: String) : CombiningParserResult()
-data class Error(val message: String) : CombiningParserResult()
+sealed class CombiningParserResult {
+    data class Success(val result: String) : CombiningParserResult()
+    data class Failure(val error: String) : CombiningParserResult()
+}

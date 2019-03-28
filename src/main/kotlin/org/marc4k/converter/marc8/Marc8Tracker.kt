@@ -40,24 +40,24 @@ internal class Marc8Tracker(data: CharArray, var g0: IsoCode = 0x42, var g1: Iso
         rollback.clear()
     }
 
-    fun getSurroundingData(): String {
+    fun getEnclosingData(): String {
         val characters = with(mutableListOf<Char>()) {
             rollback.take(10 - size).forEach {
-                add(0, if (isControlCharacter(it)) '?' else it)
+                add(0, it)
             }
 
             committed.take(10 - size).forEach {
-                add(0, if (isControlCharacter(it)) '?' else it)
+                add(0, it)
             }
 
             buffer.take(20 - size).forEach {
-                add(if (isControlCharacter(it)) '?' else it)
+                add(it)
             }
 
             toList()
         }
 
-        return "Hex: (${characters.joinToString(" ") { String.format("0x%02x", it.toInt()) }}) ASCII : (${characters.joinToString("")})"
+        return "Hex: (${characters.joinToString(" ") { String.format("0x%02x", it.toInt()) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
     }
 
     private fun isControlCharacter(character: Char): Boolean {

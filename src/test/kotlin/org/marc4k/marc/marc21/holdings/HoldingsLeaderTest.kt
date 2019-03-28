@@ -1,9 +1,9 @@
 package org.marc4k.marc.marc21.holdings
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.assertThrows
 import org.marc4k.marc.marc21.CharacterCodingScheme
 
 internal class HoldingsLeaderTest {
@@ -39,7 +39,7 @@ internal class HoldingsLeaderTest {
 
     @Test
     fun `test constructor(String) throws`() {
-        assertThrows<IllegalArgumentException> { HoldingsLeader("12345nx  a22543211i 4500X") }
+        assertThatIllegalArgumentException().isThrownBy { HoldingsLeader("12345nx  a22543211i 4500X") }
     }
 
     @Test

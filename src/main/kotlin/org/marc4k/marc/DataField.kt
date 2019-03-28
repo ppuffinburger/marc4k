@@ -1,5 +1,7 @@
 package org.marc4k.marc
 
+import org.marc4k.SUBFIELD_DELIMITER_CHARACTER
+
 data class DataField(
     val tag: String,
     val indicator1: Char = ' ',

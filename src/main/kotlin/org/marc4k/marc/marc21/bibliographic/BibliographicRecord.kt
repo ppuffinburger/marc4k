@@ -2,7 +2,7 @@ package org.marc4k.marc.marc21.bibliographic
 
 import org.marc4k.marc.DataField
 import org.marc4k.marc.Record
-import org.marc4k.marc.SUBFIELD_DELIMITER_CHARACTER
+import org.marc4k.SUBFIELD_DELIMITER_CHARACTER
 import org.marc4k.marc.marc21.Marc21Record
 import java.util.*
 

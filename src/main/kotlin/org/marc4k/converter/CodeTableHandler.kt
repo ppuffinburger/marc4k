@@ -3,14 +3,13 @@ package org.marc4k.converter
 import org.marc4k.MarcException
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
-import java.util.*
 
 class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCallback) : DefaultHandler() {
     private var currentIsoCode: IsoCode = -1
     private var currentCodeData: CodeData = CodeData()
 
     private val currentCharacterSet = hashMapOf<Marc8Code, Char>()
-    private val currentCombiningCodes = ArrayList<Marc8Code>()
+    private val currentCombiningCodes = arrayListOf<Marc8Code>()
 
     private val elementValueBuilder = StringBuilder()
 

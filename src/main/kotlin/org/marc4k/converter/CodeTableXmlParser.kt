@@ -9,11 +9,11 @@ class CodeTableXmlParser : CodeTableHandlerCallback {
     private val characterSets = mutableMapOf<IsoCode, Map<Marc8Code, Char>>()
     private val combiningCodes = mutableMapOf<IsoCode, List<Marc8Code>>()
 
-    fun parse(inputStream: InputStream): ParseResult {
+    fun parse(inputStream: InputStream): CodeTableParseResult {
         val reader = try {
             XMLReaderFactory.createXMLReader()
         } catch (e: SAXException) {
-            return ParseResult.Failure(e)
+            return CodeTableParseResult.Failure(e)
         }
 
         reader.contentHandler = CodeTableHandler(this)
@@ -21,10 +21,10 @@ class CodeTableXmlParser : CodeTableHandlerCallback {
         try {
             reader.parse(InputSource(inputStream))
         } catch (e: Exception) {
-            return ParseResult.Failure(e)
+            return CodeTableParseResult.Failure(e)
         }
 
-        return ParseResult.Success(characterSets.toMap(), combiningCodes.toMap())
+        return CodeTableParseResult.Success(characterSets.toMap(), combiningCodes.toMap())
     }
 
     override fun updateIsoCodeMaps(
@@ -37,10 +37,10 @@ class CodeTableXmlParser : CodeTableHandlerCallback {
     }
 }
 
-sealed class ParseResult {
+sealed class CodeTableParseResult {
     data class Success(
         val characterSets: Map<IsoCode, Map<Marc8Code, Char>>,
         val combiningCodes: Map<IsoCode, List<Marc8Code>>
-    ) : ParseResult()
-    data class Failure(val error: Exception) : ParseResult()
+    ) : CodeTableParseResult()
+    data class Failure(val error: Exception) : CodeTableParseResult()
 }

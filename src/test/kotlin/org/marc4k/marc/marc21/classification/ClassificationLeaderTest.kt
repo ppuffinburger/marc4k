@@ -1,9 +1,9 @@
 package org.marc4k.marc.marc21.classification
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.assertThrows
 import org.marc4k.marc.marc21.CharacterCodingScheme
 
 internal class ClassificationLeaderTest {
@@ -39,7 +39,7 @@ internal class ClassificationLeaderTest {
 
     @Test
     fun `test constructor(String) throws`() {
-        assertThrows<IllegalArgumentException> { ClassificationLeader("12345nw  a2254321n  4500X") }
+        assertThatIllegalArgumentException().isThrownBy { ClassificationLeader("12345nw  a2254321n  4500X") }
     }
 
     @Test

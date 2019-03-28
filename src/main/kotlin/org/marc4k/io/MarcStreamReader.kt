@@ -1,11 +1,9 @@
 package org.marc4k.io
 
+import org.marc4k.MarcError
 import org.marc4k.MarcException
 import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.ConversionError
-import org.marc4k.converter.NoErrors
-import org.marc4k.converter.WithErrors
-import org.marc4k.converter.marc8.Marc8ToUnicode
+import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.marc.*
 import java.io.*
 import java.nio.charset.Charset
@@ -218,9 +216,9 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
     private fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
         if (converter != null) {
             return when(val converterResult = converter.convert(bytes)) {
-                is NoErrors -> converterResult.conversion
-                is WithErrors -> {
-                    recordErrors += MarcError(fieldIndex, fieldTag, converterResult.errors)
+                is CharacterConverterResult.Success -> converterResult.conversion
+                is CharacterConverterResult.WithErrors -> {
+                    recordErrors += MarcError.EncodingError(fieldIndex, fieldTag, converterResult.errors)
                     converterResult.conversion
                 }
             }
@@ -252,30 +250,5 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         private const val SUBFIELD_DELIMITER = 0x1F
         private const val RECORD_TERMINATOR_BYTE = RECORD_TERMINATOR.toByte()
         private const val FIELD_TERMINATOR_BYTE = FIELD_TERMINATOR.toByte()
-    }
-}
-
-data class MarcError(val index: Int, val tag: String, val conversionErrors: List<ConversionError>) {
-    override fun toString() = "Field Index: $index Tag: $tag${System.lineSeparator()}${conversionErrors.joinToString(System.lineSeparator()) { "\t$it" }}"
-}
-
-fun main() {
-//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/marc4jrecords/bad_too_long_plus_2.mrc"
-    val filename = "/Users/philip/Downloads/UnicodeTest.mrc"
-//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/records/MARC8_bib_records.mrc"
-//    val filename = "/Users/philip/Development/Kotlin/marc/marc4k/src/test/resources/records/MARC8_auth_record.mrc"
-
-    MarcStreamReader(FileInputStream(filename), converter = Marc8ToUnicode(translateNcr = true)).use {
-        for (record in it) {
-            if (it.hasErrors()) {
-                println(record)
-                for (errors in it.getErrors()) {
-                    println(errors)
-                }
-                println()
-            } else {
-//                println(record)
-            }
-        }
     }
 }

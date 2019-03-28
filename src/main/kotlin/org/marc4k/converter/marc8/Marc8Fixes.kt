@@ -1,6 +1,6 @@
 package org.marc4k.converter.marc8
 
-object Fixes {
+object Marc8Fixes {
     private val knownMarc8EncodingIssuesConversions = mapOf(
         '\u00BC' to "&#x00BC;",     // vulgar fraction 1/4
         '\u00BD' to "&#x00BD;",     // vulgar fraction 1/2

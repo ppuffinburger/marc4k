@@ -1,9 +1,9 @@
 package org.marc4k.marc
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.assertThrows
 
 internal class MarcLeaderTest {
 
@@ -32,7 +32,7 @@ internal class MarcLeaderTest {
 
     @Test
     fun `test constructor(String) throws`() {
-        assertThrows<IllegalArgumentException> { MarcLeader("12345nam a2254321 a 4500X") }
+        assertThatIllegalArgumentException().isThrownBy { MarcLeader("12345nam a2254321 a 4500X") }
     }
 
     @Test

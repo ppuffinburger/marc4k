@@ -1,9 +1,9 @@
 package org.marc4k.marc.marc21.community
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.junit.jupiter.api.assertThrows
 import org.marc4k.marc.marc21.CharacterCodingScheme
 
 internal class CommunityLeaderTest {
@@ -39,7 +39,7 @@ internal class CommunityLeaderTest {
 
     @Test
     fun `test constructor(String) throws`() {
-        assertThrows<IllegalArgumentException> { CommunityLeader("12345nqn a2254321   4500X") }
+        assertThatIllegalArgumentException().isThrownBy { CommunityLeader("12345nqn a2254321   4500X") }
     }
 
     @Test
