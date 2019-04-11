@@ -28,16 +28,10 @@ class ReverseCodeTableXmlParser : ReverseCodeTableHandlerCallback {
         return ReverseCodeTableParseResult.Success(characterSets.toMap(), combiningCharacters.toHashSet())
     }
 
-    override fun updateIsoCodeMaps(isoCode: IsoCode, characterSets: List<Pair<Char, CharArray>>, combiningCharacters: Set<Char>) {
+    override fun updateIsoCodeMaps(characterSet: IsoCode, characterSets: List<Pair<Char, CharArray>>, combiningCharacters: Set<Char>) {
         characterSets.forEach { pair ->
-//            this.characterSets[pair.first]?.put(isoCode, pair.second)
-//                ?: this.characterSets.computeIfAbsent(pair.first) { mutableMapOf(isoCode to pair.second) }
-            val characterMap = this.characterSets[pair.first]
-            if (characterMap == null) {
-                this.characterSets[pair.first] = mutableMapOf(isoCode to pair.second)
-            } else {
-                characterMap.putIfAbsent(isoCode, pair.second)
-            }
+            this.characterSets[pair.first]?.put(characterSet, pair.second)
+                ?: this.characterSets.computeIfAbsent(pair.first) { mutableMapOf(characterSet to pair.second) }
         }
         this.combiningCharacters.addAll(combiningCharacters)
     }

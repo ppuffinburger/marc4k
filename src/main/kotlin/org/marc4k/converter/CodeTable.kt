@@ -33,11 +33,11 @@ class CodeTable {
         }
     }
 
-    fun getChar(marc8Code: Marc8Code, isoCode: IsoCode): Char? {
+    fun getChar(marc8Code: Marc8Code, characterSet: IsoCode): Char? {
         if (marc8Code == 0x20) {
             return marc8Code.toChar()
         } else {
-            characterSets[isoCode]?.let { return it[marc8Code] ?: it[if (marc8Code < 0x80) marc8Code + 0x80 else marc8Code - 0x80] }
+            characterSets[characterSet]?.let { return it[marc8Code] ?: it[if (marc8Code < 0x80) marc8Code + 0x80 else marc8Code - 0x80] }
                 ?: return marc8Code.toChar()
         }
     }

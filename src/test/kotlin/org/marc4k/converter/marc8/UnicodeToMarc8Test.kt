@@ -75,7 +75,7 @@ internal class UnicodeToMarc8Test {
 
     private val testDiacriticsAndSpecialWithCompatibilityData = listOf(
         Triple("A with Acute", "á", "\u00E2a"),
-        Triple("A With Circumflex and Dot Below", "ậ", "\u00F2\u00E3a"), // TODO : Dot Below (0xF2) should be the second
+        Triple("A With Circumflex and Dot Below", "ậ", "\u00E3\u00F2a"),
         Triple("Combining Double Tilde", "a͠i", "\u00FAa\u00FBi"),
         Triple("Combining Double Inverted Breve", "a͡i", "\u00EBa\u00ECi"),
         Triple("Uppercase Latin O with Horn", "Ơ", "\u00AC"),
@@ -98,7 +98,7 @@ internal class UnicodeToMarc8Test {
 
     private val testDiacriticsAndSpecialData = listOf(
         Triple("A with Acute", "á", "\u00E2a"),
-        Triple("A With Circumflex and Dot Below", "ậ", "\u00F2\u00E3a"), // TODO : Dot Below (0xF2) should be the second
+        Triple("A With Circumflex and Dot Below", "ậ", "\u00E3\u00F2a"),
         Triple("Combining Double Tilde", "a͠i", "\u00FAa\u00FBi"),
         Triple("Combining Double Inverted Breve", "a͡i", "\u00EBa\u00ECi"),
         Triple("Uppercase Latin O with Horn", "Ơ", "\u00AC"),
@@ -130,7 +130,7 @@ internal class UnicodeToMarc8Test {
         Triple("Basic Hebrew Test", "עברי", "\u001B\u0028\u0032\u0072\u0061\u0078\u0069\u001B\u0028\u0042"),
         Triple("CJK Test", "日本人", "\u001B\u0024\u0031\u0021\u0042\u0073\u0021\u0043\u0069\u0021\u0030\u0064\u001b\u0028\u0042"),
         Triple("Latin Test", "Latin ©1972", "Latin \u00C31972"),
-        Triple("Mix Test", "H₂O ۽ٲٳ English 日本人 ©1972 עברי", "H\u001B\u0062\u0032\u001B\u0028\u0042O \u001B\u0029\u0034\u00A1\u00A2\u00A3 English \u001B\u0024\u0031\u0021\u0042\u0073\u0021\u0043\u0069\u0021\u0030\u0064\u001B\u0028\u0042 \u001B\u0029\u0045\u00C31972 \u001B\u0028\u0032\u0072\u0061\u0078\u0069\u001B\u0028\u0042")
+        Triple("Mix Test", "H₂O ۽ٲٳ English 日本人 ©1972 עברי", "H\u001B\u0062\u0032\u001B\u0028\u0042O \u001B\u0029\u0034\u00A1\u00A2\u00A3 English \u001B\u0024\u0031\u0021\u0042\u0073\u0021\u0043\u0069\u0021\u0030\u0064\u001B\u0028\u0042 \u001B\u0029\u0021\u0045\u00C31972 \u001B\u0028\u0032\u0072\u0061\u0078\u0069\u001B\u0028\u0042")
     )
 
     @TestFactory
@@ -147,7 +147,7 @@ internal class UnicodeToMarc8Test {
         val given = unicodeToMarc8.convert(Normalizer.normalize("ḱṷṓn", Normalizer.Form.NFC))
         assertAll(
             { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
-            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("\u00E2k&#x1E77;\u00E5\u00E2on") }
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("\u00E2k&#x1E77;\u00E2\u00E5on") }
         )
     }
 

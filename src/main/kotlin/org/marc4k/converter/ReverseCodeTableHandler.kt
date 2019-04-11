@@ -88,5 +88,5 @@ class ReverseCodeTableHandler(private val reverseCodeTableHandlerCallback: Rever
 }
 
 interface ReverseCodeTableHandlerCallback {
-    fun updateIsoCodeMaps(isoCode: IsoCode, characterSets: List<Pair<Char, CharArray>>, combiningCharacters: Set<Char>)
+    fun updateIsoCodeMaps(characterSet: IsoCode, characterSets: List<Pair<Char, CharArray>>, combiningCharacters: Set<Char>)
 }

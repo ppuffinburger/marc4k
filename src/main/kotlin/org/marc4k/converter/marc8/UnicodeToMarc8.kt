@@ -1,5 +1,9 @@
 package org.marc4k.converter.marc8
 
+import org.marc4k.COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER
+import org.marc4k.COMBINING_DOUBLE_TILDE_CHARACTER
+import org.marc4k.IsoCode
+import org.marc4k.SPACE_CHARACTER
 import org.marc4k.converter.CharacterConverter
 import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.converter.NcrGenerator
@@ -13,6 +17,7 @@ class UnicodeToMarc8 : CharacterConverter {
     private val defaultCharacterSetsOnly: Boolean
     private val useCompatibilityDecomposition: Boolean
     private val ncrGenerator = NcrGenerator()
+    private val escapeSequenceGenerator = Marc8EscapeSequenceGenerator()
 
     constructor(filename: String, defaultCharacterSetsOnly: Boolean = false, useCompatibilityDecomposition: Boolean = false) : this(FileInputStream(filename), defaultCharacterSetsOnly, useCompatibilityDecomposition)
 
@@ -24,13 +29,11 @@ class UnicodeToMarc8 : CharacterConverter {
 
     override fun convert(data: CharArray): CharacterConverterResult {
         val convertedString = with(StringBuilder()) {
-            codeTable.init()
+            val codeTableTracker = CodeTableTracker()
 
-            convertPortion(data, this)
+            convertPortion(data, codeTableTracker, this)
 
-            if (codeTable.getPreviousG0() != 0x42) {
-                append("\u001B\u0028\u0042")
-            }
+            append(escapeSequenceGenerator.generate(BASIC_LATIN_GRAPHIC_ISO_CODE, codeTableTracker))
 
             toString()
         }
@@ -38,81 +41,27 @@ class UnicodeToMarc8 : CharacterConverter {
         return CharacterConverterResult.Success(convertedString)
     }
 
-    private fun convertPortion(data: CharArray, conversion: StringBuilder) {
+    private fun convertPortion(data: CharArray, codeTableTracker: CodeTableTracker, conversion: StringBuilder) {
         var previousLength = 1
+        var diacriticCount = 0
 
         for (index in 0..data.lastIndex) {
             val character = data[index]
             val marc8 = with(StringBuilder()) {
-                if (character == '\u0020' && codeTable.getPreviousG0() != 0x31) {
+                if (character == SPACE_CHARACTER && codeTableTracker.g0 != CJK_GRAPHIC_ISO_CODE) {
                     append(" ")
                 } else if (!codeTable.characterHasMatch(character)) {
-                    val preNormalized = character.toString()
-                    val decomposed = Normalizer.normalize(preNormalized, if (useCompatibilityDecomposition) Normalizer.Form.NFKD else Normalizer.Form.NFD)
-
-                    // TODO : this is ugly because of the with()
-                    val converted = if (preNormalized != decomposed) {
-                        if (allCharactersHaveMatch(decomposed)) {
-                            convertPortion(decomposed.toCharArray(), this)
-                            true
-                        } else if (decomposed.length > 2) {
-                            val firstTwo = decomposed.substring(0, 2)
-                            val composed = Normalizer.normalize(firstTwo, Normalizer.Form.NFC)
-
-                            if (composed != firstTwo && allCharactersHaveMatch(composed) && allCharactersHaveMatch(decomposed.substring(2))) {
-                                convertPortion("$composed${decomposed.substring(2)}".toCharArray(), this)
-                                true
-                            } else {
-                                false
-                            }
-                        } else {
-                            false
-                        }
-                    } else {
-                        false
-                    }
-
-                    if (!converted) {
-                        if (codeTable.getPreviousG0() != 0x42) {
-                            append("\u001B\u0028\u0042")
-                            codeTable.setPreviousG0(0x42)
-                        }
-
-                        append(ncrGenerator.generate(character))
-                    }
-                } else if (codeTable.inPreviousG0CharEntry(character)) {
-                    append(codeTable.getCurrentG0CharEntry(character))
-                } else if (codeTable.inPreviousG1CharEntry(character)) {
-                    append(codeTable.getCurrentG1CharEntry(character))
+                    attemptToDecomposeAndConvert(character, codeTableTracker, this)
+                } else if (codeTable.isCharacterInCurrentCharacterSet(character, codeTableTracker.g0)) {
+                    append(codeTable.getMarc8Array(character, codeTableTracker.g0))
+                } else if (codeTable.isCharacterInCurrentCharacterSet(character, codeTableTracker.g1)) {
+                    append(codeTable.getMarc8Array(character, codeTableTracker.g1))
                 } else if (defaultCharacterSetsOnly) {
                     append(ncrGenerator.generate(character))
                 } else {
                     codeTable.getBestCharacterSet(character)?.let { characterSet ->
-                        val marc8Array = codeTable.getMarc8Array(character, characterSet)
-
-                        when {
-                            marc8Array.size == 3 -> {
-                                append("\u001B\u0024")
-                                codeTable.setPreviousG0(characterSet)
-                            }
-                            marc8Array[0] < '\u0080' -> {
-                                append("\u001B")
-
-                                if (characterSet == 0x62 || characterSet == 0x70) {
-                                    // technique 1
-                                } else {
-                                    append("\u0028")
-                                }
-
-                                codeTable.setPreviousG0(characterSet)
-                            }
-                            else -> {
-                                append("\u001B\u0029")
-                                codeTable.setPreviousG1(characterSet)
-                            }
-                        }
-
-                        append("${characterSet.toChar()}${marc8Array.joinToString("")}")
+                        append(escapeSequenceGenerator.generate(characterSet, codeTableTracker))
+                        append(codeTable.getMarc8Array(character, characterSet))
                     }
                 }
 
@@ -120,20 +69,54 @@ class UnicodeToMarc8 : CharacterConverter {
             }
 
             if (codeTable.isCombining(character) && conversion.isNotEmpty()) {
-                conversion.insert(conversion.length - previousLength, marc8)
+                conversion.insert(conversion.length - previousLength - diacriticCount, marc8)
 
-                if (character == '\u0360') {
-                    conversion.append('\u00FB')
+                if (character == COMBINING_DOUBLE_TILDE_CHARACTER) {
+                    conversion.append(COMBINING_DOUBLE_TILDE_SECOND_HALF)
                 }
 
-                if (character == '\u0361') {
-                    conversion.append('\u00EC')
+                if (character == COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER) {
+                    conversion.append(COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF)
                 }
+
+                diacriticCount++
             } else {
                 conversion.append(marc8)
+                diacriticCount = 0
             }
 
             previousLength = marc8.length
+        }
+    }
+
+    private fun attemptToDecomposeAndConvert(character: Char, codeTableTracker: CodeTableTracker, conversion: StringBuilder) {
+        val preNormalized = character.toString()
+        val decomposed = Normalizer.normalize(preNormalized, if (useCompatibilityDecomposition) Normalizer.Form.NFKD else Normalizer.Form.NFD)
+
+        val converted = if (preNormalized != decomposed) {
+            if (allCharactersHaveMatch(decomposed)) {
+                convertPortion(decomposed.toCharArray(), codeTableTracker, conversion)
+                true
+            } else if (decomposed.length > 2) {
+                val firstTwo = decomposed.substring(0, 2)
+                val composed = Normalizer.normalize(firstTwo, Normalizer.Form.NFC)
+
+                if (composed != firstTwo && allCharactersHaveMatch(composed) && allCharactersHaveMatch(decomposed.substring(2))) {
+                    convertPortion("$composed${decomposed.substring(2)}".toCharArray(), codeTableTracker, conversion)
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+
+        if (!converted) {
+            conversion.append(escapeSequenceGenerator.generate(BASIC_LATIN_GRAPHIC_ISO_CODE, codeTableTracker))
+            conversion.append(ncrGenerator.generate(character))
         }
     }
 
@@ -141,3 +124,5 @@ class UnicodeToMarc8 : CharacterConverter {
         return data.all { codeTable.characterHasMatch(it) }
     }
 }
+
+data class CodeTableTracker(var g0: IsoCode = BASIC_LATIN_GRAPHIC_ISO_CODE, var g1: IsoCode = EXTENDED_LATIN_GRAPHIC_ISO_CODE)

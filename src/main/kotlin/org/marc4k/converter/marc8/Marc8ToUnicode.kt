@@ -1,14 +1,7 @@
 package org.marc4k.converter.marc8
 
-import org.marc4k.ESCAPE_CHARACTER
-import org.marc4k.Marc8Code
-import org.marc4k.SPACE_CHARACTER
+import org.marc4k.*
 import org.marc4k.converter.*
-import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF
-import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF
-import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_FIRST_HALF
-import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_SECOND_HALF
-import org.marc4k.marc8CodeToHex
 import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
@@ -268,24 +261,10 @@ class Marc8ToUnicode : CharacterConverter {
 
     private fun getMultiByteCharacter(first: Char, second: Char, third: Char): Char? {
         val marc8Code = String.format("%02X%02X%02X", first.toInt(), second.toInt(), third.toInt()).toInt(16)
-        return codeTable.getChar(marc8Code, CJK_ISO_CODE)
+        return codeTable.getChar(marc8Code, CJK_GRAPHIC_ISO_CODE)
     }
 
     private fun createConversionError(reason: String, tracker: Marc8Tracker): ConversionError {
         return ConversionError(reason, tracker.getEnclosingData())
-    }
-
-    companion object {
-        private const val CJK_ISO_CODE = 0x31
-        private const val NON_SORT_BEGIN_CHARACTER = '\u0088'
-        private const val NON_SORT_END_CHARACTER = '\u0089'
-        private const val JOINER_CHARACTER = '\u008D'
-        private const val NON_JOINER_CHARACTER = '\u008E'
-        private const val START_OF_STRING_CHARACTER = '\u0098'
-        private const val STRING_TERMINATOR_CHARACTER = '\u009C'
-        private const val ZERO_WIDTH_JOINER_CHARACTER = '\u200D'
-        private const val ZERO_WIDTH_NON_JOINER_CHARACTER = '\u200C'
-        private val C0_CONTROL_CHARACTER_RANGE = '\u0000'..'\u001F'
-        private val C1_CONTROL_CHARACTER_RANGE = '\u0080'..'\u009F'
     }
 }

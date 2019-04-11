@@ -10,9 +10,7 @@ class ReverseCodeTable {
     private val characterSets: Map<Char, Map<IsoCode, CharArray>>
     private val combiningCharacters: Set<Char>
 
-    private var g0 = 0x42
-    private var g1 = 0x45
-    private val characterSetsUsed = mutableSetOf(0x42, 0x45)
+    private val characterSetsUsed = mutableSetOf(BASIC_LATIN_GRAPHIC_ISO_CODE, EXTENDED_LATIN_GRAPHIC_ISO_CODE)
 
     constructor(inputStream: InputStream) {
         when (val result = ReverseCodeTableXmlParser().parse(inputStream)) {
@@ -28,58 +26,34 @@ class ReverseCodeTable {
 
     constructor(uri: URI) : this(uri.toURL().openStream())
 
-    fun init() {
-        g0 = 0x42
-        g1 = 0x45
-        characterSetsUsed.retainAll { it == 0x42 || it == 0x45 }
-    }
-
-    fun getPreviousG0() = g0
-
-    fun setPreviousG0(isoCode: IsoCode) {
-        g0 = isoCode
-    }
-
-    fun getPreviousG1() = g1
-
-    fun setPreviousG1(isoCode: IsoCode) {
-        g1 = isoCode
-    }
-
     fun isCombining(character: Char) = combiningCharacters.contains(character)
 
-    fun getMarc8Array(character: Char, isoCode: IsoCode) = characterSets[character]?.get(isoCode) ?: CharArray(0)
+    fun getMarc8Array(character: Char, characterSet: IsoCode) = characterSets[character]?.get(characterSet) ?: CharArray(0)
 
     fun characterHasMatch(character: Char): Boolean = characterSets[character] != null
 
-    fun inPreviousG0CharEntry(character: Char): Boolean {
-        return characterSets[character]?.get(g0)?.let { true } ?: false
-    }
-
-    fun inPreviousG1CharEntry(character: Char): Boolean {
-        return characterSets[character]?.get(g1)?.let { true } ?: false
-    }
-
-    fun getCurrentG0CharEntry(character: Char): CharArray? {
-        return characterSets[character]?.get(g0)
-    }
-
-    fun getCurrentG1CharEntry(character: Char): CharArray? {
-        return characterSets[character]?.get(g1)
+    fun isCharacterInCurrentCharacterSet(character: Char, characterSet: IsoCode): Boolean {
+        return characterSets[character]?.get(characterSet) != null
     }
 
     fun getBestCharacterSet(character: Char): IsoCode? {
-        val returnIsoCode = characterSets[character]?.let { map ->
+        val characterSet = characterSets[character]?.let { map ->
             when {
                 map.keys.count() == 1 -> map.keys.first()
                 characterSetsUsed.any { map.keys.contains(it) } -> characterSetsUsed.first { map.keys.contains(it) }
-                map.containsKey(0x53) -> 0x53
+                map.containsKey(BASIC_GREEK_GRAPHIC_ISO_CODE) -> BASIC_GREEK_GRAPHIC_ISO_CODE
                 else -> map.keys.first()
             }
         }
 
-        returnIsoCode?.let { characterSetsUsed.add(it) }
+        characterSet?.let { characterSetsUsed.add(it) }
 
-        return returnIsoCode
+        return characterSet
+    }
+
+    companion object {
+        private const val BASIC_LATIN_GRAPHIC_ISO_CODE = 0x42
+        private const val EXTENDED_LATIN_GRAPHIC_ISO_CODE = 0x45
+        private const val BASIC_GREEK_GRAPHIC_ISO_CODE = 0x53
     }
 }

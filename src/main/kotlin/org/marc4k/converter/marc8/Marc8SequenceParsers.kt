@@ -1,5 +1,7 @@
 package org.marc4k.converter.marc8
 
+import org.marc4k.COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER
+import org.marc4k.COMBINING_DOUBLE_TILDE_CHARACTER
 import org.marc4k.ESCAPE_CHARACTER
 
 internal class Marc8EscapeSequenceParser {
@@ -9,7 +11,7 @@ internal class Marc8EscapeSequenceParser {
         if (tracker.pop() == ESCAPE_CHARACTER) {
             tracker.pop()?.let { characterSet ->
                 if (characterSet in TECHNIQUE_1_CHARACTER_SETS) {
-                    tracker.g0 = if (characterSet == ASCII_DEFAULT_GRAPHIC_CHARACTER) BASIC_LATIN_ISO_CODE else characterSet.toInt()
+                    tracker.g0 = if (characterSet == ASCII_DEFAULT_GRAPHIC_CHARACTER) BASIC_LATIN_GRAPHIC_ISO_CODE else characterSet.toInt()
                     tracker.commit()
                     return true
                 }
@@ -80,34 +82,6 @@ internal class Marc8EscapeSequenceParser {
     }
 
     companion object {
-        private const val SUBSCRIPT_GRAPHIC_CHARACTER = '\u0062'
-        private const val GREEK_SYMBOLS_GRAPHIC_CHARACTER = '\u0067'
-        private const val SUPERSCRIPT_GRAPHIC_CHARACTER = '\u0070'
-        private const val ASCII_DEFAULT_GRAPHIC_CHARACTER = '\u0073'
-        private const val BASIC_ARABIC_GRAPHIC_CHARACTER = '\u0033'
-        private const val EXTENDED_ARABIC_GRAPHIC_CHARACTER = '\u0034'
-        private const val BASIC_LATIN_GRAPHIC_CHARACTER = '\u0042'
-        private const val EXTENDED_LATIN_GRAPHIC_CHARACTER = '\u0045'
-        private const val BASIC_CYRILLIC_GRAPHIC_CHARACTER = '\u004E'
-        private const val EXTENDED_CYRILLIC_GRAPHIC_CHARACTER = '\u0051'
-        private const val BASIC_GREEK_GRAPHIC_CHARACTER = '\u0053'
-        private const val BASIC_HEBREW_GRAPHIC_CHARACTER = '\u0032'
-        private const val CJK_GRAPHIC_CHARACTER = '\u0031'
-
-        private const val SINGLE_BYTE_G0_INTERMEDIATE = '\u0028'
-        private const val SINGLE_BYTE_G0_ALTERNATE_INTERMEDIATE = '\u002C'
-        private const val SINGLE_BYTE_G1_INTERMEDIATE = '\u0029'
-        private const val SINGLE_BYTE_G1_ALTERNATE_INTERMEDIATE = '\u002D'
-
-        private const val EXTENDED_LATIN_SECOND_INTERMEDIATE = '\u0021'
-
-        private const val MULTI_BYTE_INTERMEDIATE = '\u0024'
-        private const val MULTI_BYTE_G0_SECOND_INTERMEDIATE = '\u002C'
-        private const val MULTI_BYTE_G1_SECOND_INTERMEDIATE = '\u0029'
-        private const val MULTI_BYTE_G1_ALTERNATE_SECOND_INTERMEDIATE = '\u002D'
-
-        private const val BASIC_LATIN_ISO_CODE = 0x42
-
         private val TECHNIQUE_1_CHARACTER_SETS = listOf(
             SUBSCRIPT_GRAPHIC_CHARACTER,
             GREEK_SYMBOLS_GRAPHIC_CHARACTER,
@@ -169,12 +143,6 @@ internal class CombiningDoubleInvertedBreveParser {
         tracker.rollback()
         return CombiningParserResult.Failure("Unable to parse Double Inverted Breve")
     }
-
-    companion object {
-        const val COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF = '\u00EB'
-        const val COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF = '\u00EC'
-        const val COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER = '\u0361'
-    }
 }
 
 internal class CombiningDoubleTildeParser {
@@ -200,15 +168,9 @@ internal class CombiningDoubleTildeParser {
         tracker.rollback()
         return CombiningParserResult.Failure("Unable to parse Double Tilde")
     }
-
-    companion object {
-        const val COMBINING_DOUBLE_TILDE_FIRST_HALF = '\u00FA'
-        const val COMBINING_DOUBLE_TILDE_SECOND_HALF = '\u00FB'
-        const val COMBINING_DOUBLE_TILDE_CHARACTER = '\u0360'
-    }
 }
 
-sealed class CombiningParserResult {
+internal sealed class CombiningParserResult {
     data class Success(val result: String) : CombiningParserResult()
     data class Failure(val error: String) : CombiningParserResult()
 }
