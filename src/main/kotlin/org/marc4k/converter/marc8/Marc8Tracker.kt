@@ -1,6 +1,7 @@
 package org.marc4k.converter.marc8
 
-import org.marc4k.converter.IsoCode
+import org.marc4k.IsoCode
+import org.marc4k.MARC8_CODE_HEX_PATTERN
 import java.util.*
 
 internal class Marc8Tracker(data: CharArray, var g0: IsoCode = 0x42, var g1: IsoCode = 0x45) {
@@ -57,7 +58,7 @@ internal class Marc8Tracker(data: CharArray, var g0: IsoCode = 0x42, var g1: Iso
             toList()
         }
 
-        return "Hex: (${characters.joinToString(" ") { String.format("0x%02x", it.toInt()) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
+        return "Hex: (${characters.joinToString(" ") { String.format(MARC8_CODE_HEX_PATTERN, it.toInt()) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
     }
 
     private fun isControlCharacter(character: Char): Boolean {

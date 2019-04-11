@@ -1,5 +1,7 @@
 package org.marc4k.converter
 
+import org.marc4k.IsoCode
+import org.marc4k.Marc8Code
 import org.marc4k.MarcException
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
@@ -19,9 +21,8 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
             "characterSet" -> {
                 currentCharacterSet.clear()
                 currentCombiningCodes.clear()
-                attributes?.getValue("ISOcode")?.let {
-                    currentIsoCode = it.toInt(16)
-                } ?: throw MarcException("CodeTable does not contain an ISOcode attribute")
+                attributes?.getValue("ISOcode")?.let { currentIsoCode = it.toInt(16) }
+                    ?: throw MarcException("CodeTable does not contain an ISOcode attribute")
             }
             "code" -> {
                 currentCodeData = CodeData()

@@ -1,12 +1,14 @@
 package org.marc4k.converter.marc8
 
 import org.marc4k.ESCAPE_CHARACTER
+import org.marc4k.Marc8Code
 import org.marc4k.SPACE_CHARACTER
 import org.marc4k.converter.*
 import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF
 import org.marc4k.converter.marc8.CombiningDoubleInvertedBreveParser.Companion.COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF
 import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_FIRST_HALF
 import org.marc4k.converter.marc8.CombiningDoubleTildeParser.Companion.COMBINING_DOUBLE_TILDE_SECOND_HALF
+import org.marc4k.marc8CodeToHex
 import java.io.FileInputStream
 import java.io.InputStream
 import java.util.*
@@ -39,7 +41,7 @@ class Marc8ToUnicode : CharacterConverter {
     override fun convert(data: CharArray): CharacterConverterResult {
         val errors = mutableListOf<ConversionError>()
         val convertedString = with(StringBuilder()) {
-            val diacritics = ArrayDeque<Char>()
+            val diacritics = ArrayDeque<Pair<Marc8Code, Char>>()
             val tracker = Marc8Tracker(data)
 
             loop@ while (!tracker.isEmpty()) {
@@ -59,7 +61,7 @@ class Marc8ToUnicode : CharacterConverter {
                     }
                     in C0_CONTROL_CHARACTER_RANGE -> {
                         tracker.pop()?.let {
-                            errors.add(createConversionError("C0 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                            errors.add(createConversionError("C0 control character found (${marc8CodeToHex(it)}), which is invalid, deleting it.", tracker))
                         }
                         tracker.commit()
                         continue@loop
@@ -84,7 +86,7 @@ class Marc8ToUnicode : CharacterConverter {
                             }
                             else -> {
                                 tracker.pop()?.let {
-                                    errors.add(createConversionError("C1 control character found (${String.format("0x%02x", it.toInt())}), which is invalid, deleting it.", tracker))
+                                    errors.add(createConversionError("C1 control character found (${marc8CodeToHex(it)}), which is invalid, deleting it.", tracker))
                                 }
                             }
                         }
@@ -101,7 +103,7 @@ class Marc8ToUnicode : CharacterConverter {
                         tracker.pop()?.let { marc8 ->
                             getChar(marc8.toInt(), tracker).let { character ->
                                 if (character == null) {
-                                    errors.add(createConversionError("Unknown MARC8 character found: ${String.format("0x%02x", marc8.toInt())}", tracker))
+                                    errors.add(createConversionError("Unknown MARC8 character found: ${marc8CodeToHex(marc8)}", tracker))
                                     // TODO : do I want to replace instead of discarding?
                                     tracker.commit()
                                 } else {
@@ -157,7 +159,7 @@ class Marc8ToUnicode : CharacterConverter {
                         }
                         else -> {
                             if (!parseDiacritics(tracker, diacritics)) {
-                                errors.add(createConversionError("Orphaned diacritics found: ${diacritics.joinToString { String.format("U+%04x", it.toInt()) }}", tracker))
+                                errors.add(createConversionError("Orphaned diacritics found: ${diacritics.joinToString { marc8CodeToHex(it.first) }}", tracker))
                                 // TODO : do I want to replace instead of discarding?
                                 tracker.commit()
                                 continue@loop
@@ -170,7 +172,7 @@ class Marc8ToUnicode : CharacterConverter {
                             val toAppend = character ?: Marc8Fixes.replaceKnownMarc8EncodingIssues(marc8)
 
                             if (toAppend == null) {
-                                errors.add(createConversionError("Unknown MARC8 character found: ${String.format("0x%02x", marc8.toInt())}", tracker))
+                                errors.add(createConversionError("Unknown MARC8 character found: ${marc8CodeToHex(marc8)}", tracker))
                                 // TODO : do I want to replace instead of discarding?
                                 tracker.commit()
                             } else {
@@ -178,7 +180,7 @@ class Marc8ToUnicode : CharacterConverter {
                                 tracker.commit()
 
                                 while (diacritics.isNotEmpty()) {
-                                    append(diacritics.pop())
+                                    append(diacritics.pop().second)
                                 }
                             }
                         }
@@ -214,11 +216,9 @@ class Marc8ToUnicode : CharacterConverter {
         return false
     }
 
-    private fun isStartOfDiacritics(tracker: Marc8Tracker): Boolean {
-        return tracker.peek()?.let { isCombining(it.toInt(), tracker) } ?: false
-    }
+    private fun isStartOfDiacritics(tracker: Marc8Tracker) = tracker.peek()?.let { isCombining(it.toInt(), tracker) } ?: false
 
-    private fun parseDiacritics(tracker: Marc8Tracker, diacritics: ArrayDeque<Char>): Boolean {
+    private fun parseDiacritics(tracker: Marc8Tracker, diacritics: ArrayDeque<Pair<Marc8Code, Char>>): Boolean {
         diacritics.clear()
 
         do {
@@ -226,8 +226,9 @@ class Marc8ToUnicode : CharacterConverter {
             tracker.peek()?.let { peekedMarc8 ->
                 if (isCombining(peekedMarc8.toInt(), tracker)) {
                     tracker.pop()?.let { poppedMarc8 ->
-                        getChar(poppedMarc8.toInt(), tracker)?.let { character ->
-                            diacritics.push(character)
+                        val poppedMarc8Code = poppedMarc8.toInt()
+                        getChar(poppedMarc8Code, tracker)?.let { character ->
+                            diacritics.push(poppedMarc8Code to character)
                             readDiacritic = true
                         }
                     }
