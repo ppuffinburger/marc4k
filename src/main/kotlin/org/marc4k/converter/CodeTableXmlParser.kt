@@ -4,8 +4,8 @@ import org.marc4k.IsoCode
 import org.marc4k.Marc8Code
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
-import org.xml.sax.helpers.XMLReaderFactory
 import java.io.InputStream
+import javax.xml.parsers.SAXParserFactory
 
 class CodeTableXmlParser : CodeTableHandlerCallback {
     private val characterSets = mutableMapOf<IsoCode, Map<Marc8Code, Char>>()
@@ -13,7 +13,7 @@ class CodeTableXmlParser : CodeTableHandlerCallback {
 
     fun parse(inputStream: InputStream): CodeTableParseResult {
         val reader = try {
-            XMLReaderFactory.createXMLReader()
+            SAXParserFactory.newInstance().newSAXParser().xmlReader
         } catch (e: SAXException) {
             return CodeTableParseResult.Failure(e)
         }

@@ -3,8 +3,8 @@ package org.marc4k.converter
 import org.marc4k.IsoCode
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
-import org.xml.sax.helpers.XMLReaderFactory
 import java.io.InputStream
+import javax.xml.parsers.SAXParserFactory
 
 class ReverseCodeTableXmlParser : ReverseCodeTableHandlerCallback {
     private val characterSets = mutableMapOf<Char, MutableMap<IsoCode, CharArray>>()
@@ -12,7 +12,7 @@ class ReverseCodeTableXmlParser : ReverseCodeTableHandlerCallback {
 
     fun parse(inputStream: InputStream): ReverseCodeTableParseResult {
         val reader = try {
-            XMLReaderFactory.createXMLReader()
+            SAXParserFactory.newInstance().newSAXParser().xmlReader
         } catch (e: SAXException) {
             return ReverseCodeTableParseResult.Failure(e)
         }
