@@ -3,36 +3,18 @@ package org.marc4k.marc
 import kotlin.properties.Delegates
 
 class MarcLeader : Leader {
-    var recordLength by Delegates.observable(_recordLength) {
-            _, _, newValue -> _recordLength = newValue
-    }
-    var recordStatus by Delegates.observable(_recordStatus) {
-            _, _, newValue -> _recordStatus = newValue
-    }
-    var typeOfRecord by Delegates.observable(_typeOfRecord) {
-            _, _, newValue -> _typeOfRecord = newValue
-    }
-    var implementationDefined1 by Delegates.observable(_implementationDefined1) {
-            _, _, newValue -> _implementationDefined1 = newValue
-    }
-    var characterCodingScheme by Delegates.observable(_characterCodingScheme) {
-            _, _, newValue -> _characterCodingScheme = newValue
-    }
-    var indicatorCount by Delegates.observable(_indicatorCount) {
-            _, _, newValue -> _indicatorCount = newValue
-    }
-    var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) {
-            _, _, newValue -> _subfieldCodeCount = newValue
-    }
-    var baseAddressOfData by Delegates.observable(_baseAddressOfData) {
-            _, _, newValue -> _baseAddressOfData = newValue
-    }
-    var implementationDefined2 by Delegates.observable(_implementationDefined2) {
-            _, _, newValue -> _implementationDefined2 = newValue
-    }
-    var entryMap by Delegates.observable(_entryMap) {
-            _, _, newValue -> _entryMap = newValue
-    }
+    // @formatter:off
+    var recordLength by Delegates.observable(_recordLength) { _, _, newValue -> _recordLength = newValue }
+    var recordStatus by Delegates.observable(_recordStatus) { _, _, newValue -> _recordStatus = newValue }
+    var typeOfRecord by Delegates.observable(_typeOfRecord) { _, _, newValue -> _typeOfRecord = newValue }
+    var implementationDefined1 by Delegates.observable(_implementationDefined1) { _, _, newValue -> _implementationDefined1 = newValue }
+    var characterCodingScheme by Delegates.observable(_characterCodingScheme) { _, _, newValue -> _characterCodingScheme = newValue }
+    var indicatorCount by Delegates.observable(_indicatorCount) { _, _, newValue -> _indicatorCount = newValue }
+    var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) { _, _, newValue -> _subfieldCodeCount = newValue }
+    var baseAddressOfData by Delegates.observable(_baseAddressOfData) { _, _, newValue -> _baseAddressOfData = newValue }
+    var implementationDefined2 by Delegates.observable(_implementationDefined2) { _, _, newValue -> _implementationDefined2 = newValue }
+    var entryMap by Delegates.observable(_entryMap) { _, _, newValue -> _entryMap = newValue }
+    // @formatter:on
 
     constructor()
 

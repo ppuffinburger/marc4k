@@ -5,9 +5,9 @@ import org.marc4k.COMBINING_DOUBLE_TILDE_CHARACTER
 import org.marc4k.ESCAPE_CHARACTER
 
 internal class Marc8EscapeSequenceParser {
-    fun parse(tracker: Marc8Tracker) = parseTechnique1EscapeSequence(tracker) || parseTechnique2EscapeSequence(tracker)
+    fun parse(tracker: CodeDataTracker) = parseTechnique1EscapeSequence(tracker) || parseTechnique2EscapeSequence(tracker)
 
-    private fun parseTechnique1EscapeSequence(tracker: Marc8Tracker): Boolean {
+    private fun parseTechnique1EscapeSequence(tracker: CodeDataTracker): Boolean {
         if (tracker.pop() == ESCAPE_CHARACTER) {
             tracker.pop()?.let { characterSet ->
                 if (characterSet in TECHNIQUE_1_CHARACTER_SETS) {
@@ -21,9 +21,9 @@ internal class Marc8EscapeSequenceParser {
         return false
     }
 
-    private fun parseTechnique2EscapeSequence(tracker: Marc8Tracker) = parseTechnique2SingleByteEscapeSequence(tracker) || parseTechnique2MultiByteEscapeSequence(tracker)
+    private fun parseTechnique2EscapeSequence(tracker: CodeDataTracker) = parseTechnique2SingleByteEscapeSequence(tracker) || parseTechnique2MultiByteEscapeSequence(tracker)
 
-    private fun parseTechnique2SingleByteEscapeSequence(tracker: Marc8Tracker): Boolean {
+    private fun parseTechnique2SingleByteEscapeSequence(tracker: CodeDataTracker): Boolean {
         if (tracker.pop() == ESCAPE_CHARACTER) {
             tracker.pop()?.let { intermediate ->
                 if (intermediate in SINGLE_BYTE_INTERMEDIATES) {
@@ -54,7 +54,7 @@ internal class Marc8EscapeSequenceParser {
         return false
     }
 
-    private fun parseTechnique2MultiByteEscapeSequence(tracker: Marc8Tracker): Boolean {
+    private fun parseTechnique2MultiByteEscapeSequence(tracker: CodeDataTracker): Boolean {
         if (tracker.pop() == ESCAPE_CHARACTER) {
             tracker.pop()?.let { intermediate ->
                 if (intermediate == MULTI_BYTE_INTERMEDIATE) {
@@ -121,7 +121,7 @@ internal class Marc8EscapeSequenceParser {
 }
 
 internal class CombiningDoubleInvertedBreveParser {
-    fun parse(tracker: Marc8Tracker): CombiningParserResult {
+    fun parse(tracker: CodeDataTracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
             if (firstHalf == COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF) {
                 tracker.pop()?.let { firstCharacter ->
@@ -146,7 +146,7 @@ internal class CombiningDoubleInvertedBreveParser {
 }
 
 internal class CombiningDoubleTildeParser {
-    fun parse(tracker: Marc8Tracker): CombiningParserResult {
+    fun parse(tracker: CodeDataTracker): CombiningParserResult {
         tracker.pop()?.let { firstHalf ->
             if (firstHalf == COMBINING_DOUBLE_TILDE_FIRST_HALF) {
                 tracker.pop()?.let { firstCharacter ->

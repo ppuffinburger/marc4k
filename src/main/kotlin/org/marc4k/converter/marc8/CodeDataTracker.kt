@@ -4,54 +4,56 @@ import org.marc4k.IsoCode
 import org.marc4k.MARC8_CODE_HEX_PATTERN
 import java.util.*
 
-internal class Marc8Tracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GRAPHIC_ISO_CODE, var g1: IsoCode = EXTENDED_LATIN_GRAPHIC_ISO_CODE) {
-    private val buffer = ArrayDeque(data.toList())
-    private val rollback = ArrayDeque<Char>()
-    private val committed = ArrayDeque<Char>()
+internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GRAPHIC_ISO_CODE, var g1: IsoCode = EXTENDED_LATIN_GRAPHIC_ISO_CODE) {
+    private val stack = ArrayDeque(data.toList())
+    private val undo = ArrayDeque<Char>(data.size)
+    private val history = ArrayDeque<Char>(data.size)
 
     val offset: Int
-        get() = committed.size + rollback.size
+        get() = history.size + undo.size
 
     fun isEACC() = g0 == 0x31 || g1 == 0x31
 
-    fun isEmpty() = buffer.isEmpty()
+    fun isEmpty() = stack.isEmpty()
 
-    fun peek(): Char? = buffer.peek()
+    fun peek(): Char? = stack.peek()
 
     fun pop(): Char? {
-        if (buffer.isEmpty()) {
+        if (stack.isEmpty()) {
             return null
         }
-        rollback.push(buffer.pop())
-        return rollback.peek()
+        undo.push(stack.pop())
+        return undo.peek()
     }
 
-    fun undo() = rollback.peek()?.let { buffer.push(rollback.pop()) }
+    fun canUndo() = undo.isNotEmpty()
+
+    fun undo() = undo.peek()?.let { stack.push(undo.pop()) }
 
     fun rollback() {
-        while(rollback.isNotEmpty()) {
-            buffer.push(rollback.pop())
+        while(canUndo()) {
+            undo()
         }
     }
 
     fun commit() {
-        for (character in rollback.descendingIterator()) {
-            committed.push(character)
+        for (character in undo.descendingIterator()) {
+            history.push(character)
         }
-        rollback.clear()
+        undo.clear()
     }
 
     fun getEnclosingData(): String {
         val characters = with(mutableListOf<Char>()) {
-            rollback.take(10 - size).forEach {
+            undo.take(10 - size).forEach {
                 add(0, it)
             }
 
-            committed.take(10 - size).forEach {
+            history.take(10 - size).forEach {
                 add(0, it)
             }
 
-            buffer.take(20 - size).forEach {
+            stack.take(20 - size).forEach {
                 add(it)
             }
 
@@ -60,6 +62,8 @@ internal class Marc8Tracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GRAPH
 
         return "Hex: (${characters.joinToString(" ") { String.format(MARC8_CODE_HEX_PATTERN, it.toInt()) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
     }
+
+    fun getTrackerWithCurrentBuffer() = CodeDataTracker(stack.toCharArray(), g0, g1)
 
     private fun isControlCharacter(character: Char): Boolean {
         return when(character) {

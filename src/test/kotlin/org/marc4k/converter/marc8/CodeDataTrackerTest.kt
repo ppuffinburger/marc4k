@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 
-internal class Marc8TrackerTest {
+internal class CodeDataTrackerTest {
     @Test
     fun `test constructor(CharArray)`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertAll(
             { assertThat(tracker.g0).isEqualTo(0x42) },
             { assertThat(tracker.g1).isEqualTo(0x45) }
@@ -16,7 +16,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test constructor(CharArray, IsoCode, IsoCode)`() {
-        val tracker = Marc8Tracker("data".toCharArray(), 0x4E, 0x51)
+        val tracker = CodeDataTracker("data".toCharArray(), 0x4E, 0x51)
         assertAll(
             { assertThat(tracker.g0).isEqualTo(0x4E) },
             { assertThat(tracker.g1).isEqualTo(0x51) }
@@ -25,14 +25,14 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test isEACC()`() {
-        assertThat(Marc8Tracker("data".toCharArray()).isEACC()).isFalse()
-        assertThat(Marc8Tracker("data".toCharArray(), g0 = 0x31).isEACC()).isTrue()
-        assertThat(Marc8Tracker("data".toCharArray(), g1 = 0x31).isEACC()).isTrue()
+        assertThat(CodeDataTracker("data".toCharArray()).isEACC()).isFalse()
+        assertThat(CodeDataTracker("data".toCharArray(), g0 = 0x31).isEACC()).isTrue()
+        assertThat(CodeDataTracker("data".toCharArray(), g1 = 0x31).isEACC()).isTrue()
     }
 
     @Test
     fun `test isEmpty()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.isEmpty()).isFalse()
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.isEmpty()).isFalse()
@@ -46,7 +46,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test peek()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.peek()).isEqualTo('d')
         assertThat(tracker.peek()).isEqualTo('d')
         assertThat(tracker.pop()).isEqualTo('d')
@@ -60,7 +60,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test pop()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.pop()).isEqualTo('a')
         assertThat(tracker.pop()).isEqualTo('t')
@@ -70,7 +70,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test undo()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.peek()).isEqualTo('a')
         tracker.undo()
@@ -79,7 +79,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test rollback()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         tracker.rollback()
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.pop()).isEqualTo('a')
@@ -89,7 +89,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test commit()`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.pop()).isEqualTo('a')
         tracker.commit()
@@ -99,7 +99,7 @@ internal class Marc8TrackerTest {
 
     @Test
     fun `test offset property`() {
-        val tracker = Marc8Tracker("data".toCharArray())
+        val tracker = CodeDataTracker("data".toCharArray())
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.pop()).isEqualTo('d')
         assertThat(tracker.pop()).isEqualTo('a')
@@ -122,7 +122,7 @@ internal class Marc8TrackerTest {
     @Test
     fun `test getEnclosingData()`() {
         val data = "abcdefghijklmnopqrstuvwxyz".toCharArray()
-        val tracker = Marc8Tracker(data)
+        val tracker = CodeDataTracker(data)
         assertAll(
             { assertThat(getAscii(tracker.getEnclosingData())).isEqualTo("abcdefghijklmnopqrst") },
             { assertThat(getHex(tracker.getEnclosingData())).isEqualTo("0x61 0x62 0x63 0x64 0x65 0x66 0x67 0x68 0x69 0x6a 0x6b 0x6c 0x6d 0x6e 0x6f 0x70 0x71 0x72 0x73 0x74") }
@@ -156,7 +156,7 @@ internal class Marc8TrackerTest {
     @Test
     fun `test getEnclosingData() with control characters`() {
         val data = "abc\u000Aefghijklmnopqrstuv\u008Axyz".toCharArray()
-        val tracker = Marc8Tracker(data)
+        val tracker = CodeDataTracker(data)
         assertAll(
             { assertThat(getAscii(tracker.getEnclosingData())).isEqualTo("abc?efghijklmnopqrst") },
             { assertThat(getHex(tracker.getEnclosingData())).isEqualTo("0x61 0x62 0x63 0x0a 0x65 0x66 0x67 0x68 0x69 0x6a 0x6b 0x6c 0x6d 0x6e 0x6f 0x70 0x71 0x72 0x73 0x74") }

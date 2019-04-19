@@ -1,7 +1,6 @@
 package org.marc4k.io
 
-import org.marc4k.MarcError
-import org.marc4k.MarcException
+import org.marc4k.*
 import org.marc4k.converter.CharacterConverter
 import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.marc.*
@@ -60,10 +59,6 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         input.close()
     }
 
-    fun hasErrors() = recordErrors.isNotEmpty()
-
-    fun getErrors() = recordErrors.toList()
-
     private fun parseEncoding(encoding: String): String {
         return when (encoding.toUpperCase()) {
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> "ISO-8859-1"
@@ -111,6 +106,10 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
             throw MarcException("Expected record terminator at end of record")
         }
 
+        if (recordErrors.isNotEmpty()) {
+            record.errors += recordErrors
+        }
+
         return record
     }
 
@@ -151,10 +150,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
                             parseSubfields(
                                 index,
                                 entry.first,
-                                recordBytes.copyOfRange(
-                                    entry.third + 2,
-                                    entry.third + entry.second
-                                )
+                                recordBytes.copyOfRange(entry.third + 2, entry.third + entry.second)
                             )
                         )
                     })
@@ -242,12 +238,8 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
     }
 
     companion object {
-        private const val LEADER_LENGTH = 24
         private const val LEADER_RECORD_LENGTH_LENGTH = 5
         private const val DIRECTORY_ENTRY_LENGTH = 12
-        private const val RECORD_TERMINATOR = 0x1D
-        private const val FIELD_TERMINATOR = 0x1E
-        private const val SUBFIELD_DELIMITER = 0x1F
         private const val RECORD_TERMINATOR_BYTE = RECORD_TERMINATOR.toByte()
         private const val FIELD_TERMINATOR_BYTE = FIELD_TERMINATOR.toByte()
     }

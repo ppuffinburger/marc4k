@@ -316,6 +316,15 @@ internal class Marc8ToUnicodeTest {
     }
 
     @Test
+    fun `test convert(CharArray) with diacritic preceding escape sequence`() {
+        val given = marc8ToUnicode.convert("Hebrew page (\u001B(2hpfio bi`hqe = ò\u001B(BTenzin Gi®aòtso)".toCharArray())
+        assertAll("",
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("Hebrew page (טנזין גיאטסו = Ṭenzin Giʼaṭso)") }
+        )
+    }
+
+    @Test
     fun `test convert(CharArray) with invalid character`() {
         val given = marc8ToUnicode.convert("\u00AF".toCharArray())
         assertAll(

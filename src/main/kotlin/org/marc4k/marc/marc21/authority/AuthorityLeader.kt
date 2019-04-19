@@ -5,70 +5,24 @@ import org.marc4k.marc.marc21.CharacterCodingScheme
 import kotlin.properties.Delegates
 
 class AuthorityLeader : Leader {
-    var recordLength by Delegates.observable(_recordLength) {
-            _, _, newValue -> _recordLength = newValue
-    }
-    var recordStatus by Delegates.observable(
-        RecordStatus.fromValue(
-            _recordStatus
-        )
-    ) {
-            _, _, newValue -> _recordStatus = newValue.value
-    }
-    var typeOfRecord by Delegates.observable(
-        TypeOfRecord.fromValue(
-            _typeOfRecord
-        )
-    ) {
-            _, _, newValue -> _typeOfRecord = newValue.value
-    }
-    var undefinedPosition7 by Delegates.observable(_implementationDefined1[0]) {
-            _, _, newValue -> _implementationDefined1[0] = newValue
-    }
-    var undefinedPosition8 by Delegates.observable(_implementationDefined1[1]) {
-        _, _, newValue -> _implementationDefined1[1] = newValue
-    }
-    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_characterCodingScheme)) {
-            _, _, newValue -> _characterCodingScheme = newValue.value
-    }
-    var indicatorCount by Delegates.observable(_indicatorCount) {
-            _, _, newValue -> _indicatorCount = newValue
-    }
-    var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) {
-            _, _, newValue -> _subfieldCodeCount = newValue
-    }
-    var baseAddressOfData by Delegates.observable(_baseAddressOfData) {
-            _, _, newValue -> _baseAddressOfData = newValue
-    }
-    var encodingLevel by Delegates.observable(
-        EncodingLevel.fromValue(
-            _implementationDefined2[0]
-        )
-    ) {
-            _, _, newValue -> _implementationDefined2[0] = newValue.value
-    }
-    var punctuationPolicy by Delegates.observable(
-        PunctuationPolicy.fromValue(
-            _implementationDefined2[1]
-        )
-    ) {
-            _, _, newValue -> _implementationDefined2[1] = newValue.value
-    }
-    var undefinedPosition19 by Delegates.observable(_implementationDefined2[2]) {
-            _, _, newValue -> _implementationDefined2[2] = newValue
-    }
-    var lengthOfTheLengthOfFieldPortion by Delegates.observable(_entryMap[0]) {
-            _, _, newValue -> _entryMap[0] = newValue
-    }
-    var lengthOfTheStartingCharacterPositionPortion by Delegates.observable(_entryMap[1]) {
-            _, _, newValue -> _entryMap[1] = newValue
-    }
-    var lengthOfTheImplementationDefinedPortion by Delegates.observable(_entryMap[2]) {
-            _, _, newValue -> _entryMap[2] = newValue
-    }
-    var undefinedPosition23 by Delegates.observable(_entryMap[3]) {
-            _, _, newValue -> _entryMap[3] = newValue
-    }
+    // @formatter:off
+    var recordLength by Delegates.observable(_recordLength) { _, _, newValue -> _recordLength = newValue }
+    var recordStatus by Delegates.observable(RecordStatus.fromValue(_recordStatus)) { _, _, newValue -> _recordStatus = newValue.value }
+    var typeOfRecord by Delegates.observable(TypeOfRecord.fromValue(_typeOfRecord)) { _, _, newValue -> _typeOfRecord = newValue.value }
+    var undefinedPosition7 by Delegates.observable(_implementationDefined1[0]) { _, _, newValue -> _implementationDefined1[0] = newValue }
+    var undefinedPosition8 by Delegates.observable(_implementationDefined1[1]) { _, _, newValue -> _implementationDefined1[1] = newValue }
+    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_characterCodingScheme)) { _, _, newValue -> _characterCodingScheme = newValue.value }
+    var indicatorCount by Delegates.observable(_indicatorCount) { _, _, newValue -> _indicatorCount = newValue }
+    var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) { _, _, newValue -> _subfieldCodeCount = newValue }
+    var baseAddressOfData by Delegates.observable(_baseAddressOfData) { _, _, newValue -> _baseAddressOfData = newValue }
+    var encodingLevel by Delegates.observable(EncodingLevel.fromValue(_implementationDefined2[0])) { _, _, newValue -> _implementationDefined2[0] = newValue.value }
+    var punctuationPolicy by Delegates.observable(PunctuationPolicy.fromValue(_implementationDefined2[1])) { _, _, newValue -> _implementationDefined2[1] = newValue.value }
+    var undefinedPosition19 by Delegates.observable(_implementationDefined2[2]) { _, _, newValue -> _implementationDefined2[2] = newValue }
+    var lengthOfTheLengthOfFieldPortion by Delegates.observable(_entryMap[0]) { _, _, newValue -> _entryMap[0] = newValue }
+    var lengthOfTheStartingCharacterPositionPortion by Delegates.observable(_entryMap[1]) { _, _, newValue -> _entryMap[1] = newValue }
+    var lengthOfTheImplementationDefinedPortion by Delegates.observable(_entryMap[2]) { _, _, newValue -> _entryMap[2] = newValue }
+    var undefinedPosition23 by Delegates.observable(_entryMap[3]) { _, _, newValue -> _entryMap[3] = newValue }
+    // @formatter:on
 
     constructor() {
         undefinedPosition7 = ' '

@@ -2,6 +2,7 @@ package org.marc4k.converter
 
 import org.marc4k.IsoCode
 import org.marc4k.MarcException
+import org.marc4k.converter.marc8.BASIC_GREEK_GRAPHIC_ISO_CODE
 import java.io.FileInputStream
 import java.io.InputStream
 import java.net.URI
@@ -9,8 +10,6 @@ import java.net.URI
 class ReverseCodeTable {
     private val characterSets: Map<Char, Map<IsoCode, CharArray>>
     private val combiningCharacters: Set<Char>
-
-    private val characterSetsUsed = mutableSetOf(BASIC_LATIN_GRAPHIC_ISO_CODE, EXTENDED_LATIN_GRAPHIC_ISO_CODE)
 
     constructor(inputStream: InputStream) {
         when (val result = ReverseCodeTableXmlParser().parse(inputStream)) {
@@ -30,13 +29,13 @@ class ReverseCodeTable {
 
     fun getMarc8Array(character: Char, characterSet: IsoCode) = characterSets[character]?.get(characterSet) ?: CharArray(0)
 
-    fun characterHasMatch(character: Char): Boolean = characterSets[character] != null
+    fun isCharacterInCodeTable(character: Char): Boolean = characterSets[character] != null
 
     fun isCharacterInCurrentCharacterSet(character: Char, characterSet: IsoCode): Boolean {
         return characterSets[character]?.get(characterSet) != null
     }
 
-    fun getBestCharacterSet(character: Char): IsoCode? {
+    fun getBestCharacterSet(character: Char, characterSetsUsed: MutableSet<IsoCode>): IsoCode? {
         val characterSet = characterSets[character]?.let { map ->
             when {
                 map.keys.count() == 1 -> map.keys.first()
@@ -49,11 +48,5 @@ class ReverseCodeTable {
         characterSet?.let { characterSetsUsed.add(it) }
 
         return characterSet
-    }
-
-    companion object {
-        private const val BASIC_LATIN_GRAPHIC_ISO_CODE = 0x42
-        private const val EXTENDED_LATIN_GRAPHIC_ISO_CODE = 0x45
-        private const val BASIC_GREEK_GRAPHIC_ISO_CODE = 0x53
     }
 }

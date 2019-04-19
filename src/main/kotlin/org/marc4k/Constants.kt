@@ -2,6 +2,12 @@ package org.marc4k
 
 internal const val MARC8_CODE_HEX_PATTERN = "0x%02x"
 
+// MARC Constants
+internal const val LEADER_LENGTH = 24
+internal const val RECORD_TERMINATOR = 0x1D
+internal const val FIELD_TERMINATOR = 0x1E
+internal const val SUBFIELD_DELIMITER = 0x1F
+
 // Unicode Constants
 internal const val ESCAPE_CHARACTER = '\u001B'
 internal const val SUBFIELD_DELIMITER_CHARACTER = '\u001F'

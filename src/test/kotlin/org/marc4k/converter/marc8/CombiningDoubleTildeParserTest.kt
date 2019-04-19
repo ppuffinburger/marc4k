@@ -7,7 +7,7 @@ import org.junit.jupiter.api.assertAll
 internal class CombiningDoubleTildeParserTest {
     @Test
     fun `test parse(Tracker) with valid sequence`() {
-        val tracker = Marc8Tracker("\u00FAa\u00FBi".toCharArray())
+        val tracker = CodeDataTracker("\u00FAa\u00FBi".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertAll(
             { assertThat(given).isInstanceOf(CombiningParserResult.Success::class.java) },
@@ -17,56 +17,56 @@ internal class CombiningDoubleTildeParserTest {
 
     @Test
     fun `test parse(Tracker) with no first half`() {
-        val tracker = Marc8Tracker("".toCharArray())
+        val tracker = CodeDataTracker("".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with invalid first half`() {
-        val tracker = Marc8Tracker("Xa\u00FBi".toCharArray())
+        val tracker = CodeDataTracker("Xa\u00FBi".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with no first character`() {
-        val tracker = Marc8Tracker("\u00FA".toCharArray())
+        val tracker = CodeDataTracker("\u00FA".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with invalid first character`() {
-        val tracker = Marc8Tracker("\u00FA\u000D\u00FBi".toCharArray())
+        val tracker = CodeDataTracker("\u00FA\u000D\u00FBi".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with no second half`() {
-        val tracker = Marc8Tracker("\u00FAa".toCharArray())
+        val tracker = CodeDataTracker("\u00FAa".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with invalid second half`() {
-        val tracker = Marc8Tracker("\u00FAaXi".toCharArray())
+        val tracker = CodeDataTracker("\u00FAaXi".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with no second character`() {
-        val tracker = Marc8Tracker("\u00FAa\u00FB".toCharArray())
+        val tracker = CodeDataTracker("\u00FAa\u00FB".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }
 
     @Test
     fun `test parse(Tracker) with invalid second character`() {
-        val tracker = Marc8Tracker("\u00FAa\u00FB\u000D".toCharArray())
+        val tracker = CodeDataTracker("\u00FAa\u00FB\u000D".toCharArray())
         val given = CombiningDoubleTildeParser().parse(tracker)
         assertThat(given).isInstanceOf(CombiningParserResult.Failure::class.java)
     }

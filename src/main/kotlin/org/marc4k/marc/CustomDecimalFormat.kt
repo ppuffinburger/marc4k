@@ -3,11 +3,7 @@ package org.marc4k.marc
 import java.text.DecimalFormat
 import java.text.FieldPosition
 
-class CustomDecimalFormat(
-    numberOfDigits: Int,
-    private val overflowRepresentation: OverflowRepresentation = OverflowRepresentation.ALL_NINES
-) : DecimalFormat(FORMAT_STRING.substring(0, numberOfDigits)) {
-
+internal class CustomDecimalFormat(numberOfDigits: Int, private val overflowRepresentation: OverflowRepresentation = OverflowRepresentation.ALL_NINES) : DecimalFormat(FORMAT_STRING.substring(0, numberOfDigits)) {
     private val maximumValue: Long = MAX_STRING.substring(0, numberOfDigits).toLong()
 
     init {
