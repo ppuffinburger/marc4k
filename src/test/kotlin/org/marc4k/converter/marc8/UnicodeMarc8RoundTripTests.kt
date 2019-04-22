@@ -6,13 +6,14 @@ import org.junit.jupiter.api.TestFactory
 import org.marc4k.converter.CharacterConverterResult
 
 internal class UnicodeMarc8RoundTripTests {
-    private val marc8ToUnicode = Marc8ToUnicode(true)
+    private val marc8ToUnicode = Marc8ToUnicode(true, translateNcr = true)
     private val unicodeToMarc8 = UnicodeToMarc8()
 
     private val testData = listOf(
         "Test 1" to "テンジン·ギャツォ,",
         "Test 2" to "Hebrew page (טנזין גיאטסו = Ṭenzin Giʼaṭso)",
-        "Test 3" to "aבּסתן־דז׳ין־רגיה־מצ׳ו,"
+        "Test 3" to "aבּסתן־דז׳ין־רגיה־מצ׳ו,",
+        "Test 4" to "¼½¾"
     )
 
     @TestFactory

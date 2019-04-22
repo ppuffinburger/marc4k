@@ -94,6 +94,12 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
         }
     }
 
+    // TODO : not sure I like this.  Does UNIMARC (or others) follow LoC's leader for position 9?   Maybe I should check if record
+    //  is a Marc21Record first and then apply this.  If you're dealing with a straight MarcRecord, maybe it shouldn't have a character
+    //  coding scheme either and make the developer handle what is need without the writer automatically doing it.  It also mean that
+    //  if you don't pass in a converter and you have a ' ' in position 9 then it just encodes in ISO-8859-1 instead of converting to
+    //  MARC8.  This just seems really Marc21 specific.
+    //  Need more research.
     private fun setCurrentEncoding(record: MarcRecord) {
         converter?.let {
             record.leader.characterCodingScheme = if (it.outputsUnicode()) 'a' else ' '

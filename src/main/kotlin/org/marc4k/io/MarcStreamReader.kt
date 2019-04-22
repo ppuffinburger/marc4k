@@ -88,6 +88,15 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
             leader.setData(recordBytes.copyOfRange(0, LEADER_LENGTH).toString(Charsets.ISO_8859_1))
         }
 
+        // TODO : not sure I like this.  Does UNIMARC (or others) follow LoC's leader for position 9?  It just seems really
+        //  Marc21 specific for a MARC stream reader vs a MARC21 stream reader.  If a converter is passed in, then it is
+        //  going to use that no matter what.  MARC4J looks at the character coding scheme and sets the encoding as below.
+        //  In MARC4J that means you also can't read a mix of MARC21 UTF8 and MARC8 records, as you can't in MARC4K.  I've
+        //  never seen a mixed file that wasn't just some concatenation, but it has happened.  Could change the ' ' condition
+        //  to an encoding of "MARC8" and only apply the converter in that case.  That should work, but still possibly be
+        //  MARC21 specific.
+        //  Need more research.
+
         // if MARC21 check position 09 for encoding and override
         when (record.leader.characterCodingScheme) {
             ' ' -> if (!overrideEncoding) encoding = "ISO-8859-1"

@@ -74,7 +74,7 @@ internal class MarcStreamReaderTest {
 
     @Test
     fun `test with unordered directory entries`() {
-        MarcStreamReader(javaClass.getResourceAsStream("/records/unordered_directory_entries.mrc")).use { reader ->
+        MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_unordered_directory_entries.mrc"), converter = Marc8ToUnicode()).use { reader ->
             val record = reader.next()
             assertThat(record.controlFields[0].tag).isEqualTo("001")
         }

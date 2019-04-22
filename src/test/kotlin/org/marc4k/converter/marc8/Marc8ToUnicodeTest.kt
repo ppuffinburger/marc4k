@@ -332,4 +332,17 @@ internal class Marc8ToUnicodeTest {
             { assertThat((given as CharacterConverterResult.WithErrors).conversion).isEqualTo("") }
         )
     }
+
+    @Test
+    fun `test convert(CharArray) with vulgar fractions`() {
+        // Some vulgar fractions seem to be routinely encoded wrong in MARC8 records.   They are encoded as MARC8 using their Unicode
+        // values instead of translated to an NCR, which conflict with some extended latin MARC8 codes.
+
+        // Switching out of extended latin because two of the vulgar fractions are valid there
+        val given = marc8ToUnicode.convert("\u001B\u0024\u0029\u0031\u00BC\u00BD\u00BE".toCharArray())
+        assertAll(
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("&#x00BC;&#x00BD;&#x00BE;") }
+        )
+    }
 }
