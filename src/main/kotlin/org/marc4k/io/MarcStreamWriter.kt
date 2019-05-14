@@ -1,9 +1,6 @@
 package org.marc4k.io
 
-import org.marc4k.FIELD_TERMINATOR
-import org.marc4k.LEADER_LENGTH
-import org.marc4k.MarcException
-import org.marc4k.RECORD_TERMINATOR
+import org.marc4k.*
 import org.marc4k.converter.CharacterConverter
 import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.marc.CustomDecimalFormat
@@ -88,8 +85,8 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
 
     private fun parseEncoding(encoding: String): String {
         return when (encoding.toUpperCase()) {
-            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> "ISO-8859-1"
-            "UTF8", "UTF-8" -> "UTF8"
+            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
+            "UTF8", "UTF-8" -> UTF_8
             else -> encoding
         }
     }
@@ -102,10 +99,10 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
     //  Need more research.
     private fun setCurrentEncoding(record: MarcRecord) {
         converter?.let {
-            record.leader.characterCodingScheme = if (it.outputsUnicode()) 'a' else ' '
+            record.leader.implementationDefined1[2] = if (it.outputsUnicode()) 'a' else ' '
         }
 
-        currentEncoding = if (encoding == ENCODING_DEFINED_BY_LEADER) if (record.leader.characterCodingScheme == 'a') "UTF-8" else "ISO-8859-1" else encoding
+        currentEncoding = if (encoding == ENCODING_DEFINED_BY_LEADER) if (record.leader.implementationDefined1[2] == 'a') UTF_8 else ISO_8859_1 else encoding
     }
 
     private fun getDataBytes(data: String): ByteArray {

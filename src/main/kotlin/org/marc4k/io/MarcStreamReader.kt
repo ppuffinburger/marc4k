@@ -8,14 +8,14 @@ import java.io.*
 import java.nio.charset.Charset
 import java.util.function.Consumer
 
-class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8859-1", private val converter: CharacterConverter? = null) : MarcReader {
+class MarcStreamReader(input: InputStream, private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcReader {
     private val input: DataInputStream = DataInputStream(if (input.markSupported()) input else BufferedInputStream(input))
     private val overrideEncoding: Boolean
     private val recordErrors = mutableListOf<MarcError>()
 
     init {
         encoding = parseEncoding(encoding)
-        overrideEncoding = encoding != "ISO-8859-1"
+        overrideEncoding = encoding != ISO_8859_1
     }
 
     override fun hasNext(): Boolean {
@@ -61,8 +61,8 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
 
     private fun parseEncoding(encoding: String): String {
         return when (encoding.toUpperCase()) {
-            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> "ISO-8859-1"
-            "UTF8", "UTF-8" -> "UTF8"
+            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
+            "UTF8", "UTF-8" -> UTF_8
             else -> encoding
         }
     }
@@ -98,9 +98,9 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
         //  Need more research.
 
         // if MARC21 check position 09 for encoding and override
-        when (record.leader.characterCodingScheme) {
-            ' ' -> if (!overrideEncoding) encoding = "ISO-8859-1"
-            'a' -> if (!overrideEncoding) encoding = "UTF8"
+        when (record.leader.implementationDefined1[2]) {
+            ' ' -> if (!overrideEncoding) encoding = ISO_8859_1
+            'a' -> if (!overrideEncoding) encoding = UTF_8
         }
 
         val directoryEntries = parseDirectory(recordBytes.copyOfRange(LEADER_LENGTH, record.leader.baseAddressOfData - 1))
@@ -145,10 +145,11 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
 
     private fun parseFields(recordBytes: ByteArray, directoryEntries: ArrayList<Triple<String, Int, Int>>, record: Record) {
         for ((index, entry) in directoryEntries.withIndex()) {
+            if (recordBytes[entry.second + entry.third - 1] != FIELD_TERMINATOR_BYTE) {
+                throw MarcException("Expected field terminator at end of field")
+            }
+
             if (entry.first.startsWith("00")) {
-                if (recordBytes[entry.second + entry.third - 1] != FIELD_TERMINATOR_BYTE) {
-                    throw MarcException("Expected field terminator at end of field")
-                }
                 record.controlFields.add(ControlField(entry.first, getDataAsString(index, entry.first, recordBytes.copyOfRange(entry.third, entry.third + entry.second - 1))))
             } else {
                 val indicator1 = recordBytes[entry.third].toChar()
@@ -229,10 +230,10 @@ class MarcStreamReader(input: InputStream, private var encoding: String = "ISO-8
             }
         } else {
             return when(encoding) {
-                "UTF8" -> {
+                UTF_8 -> {
                     bytes.toString(Charsets.UTF_8)
                 }
-                "ISO-8859-1" -> {
+                ISO_8859_1 -> {
                     bytes.toString(Charsets.ISO_8859_1)
                 }
                 else -> {

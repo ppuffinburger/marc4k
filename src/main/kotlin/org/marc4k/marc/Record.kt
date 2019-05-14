@@ -9,7 +9,6 @@ abstract class Record {
 
     val controlFields = mutableListOf<ControlField>()
     val dataFields = mutableListOf<DataField>()
-
     val errors = mutableListOf<MarcError>()
 
     fun getControlNumber() = controlFields.firstOrNull { it.tag == "001" }?.data

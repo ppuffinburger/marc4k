@@ -18,3 +18,7 @@ internal const val ZERO_WIDTH_JOINER_CHARACTER = '\u200D'
 internal const val ZERO_WIDTH_NON_JOINER_CHARACTER = '\u200C'
 internal const val COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER = '\u0361'
 internal const val COMBINING_DOUBLE_TILDE_CHARACTER = '\u0360'
+
+// Encoding Strings
+internal const val UTF_8 = "UTF-8"
+internal const val ISO_8859_1 = "ISO-8859-1"

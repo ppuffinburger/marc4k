@@ -230,7 +230,7 @@ internal class MarcXmlWriterTest {
         }
     }
 
-    private val recordTypeClassTestData = listOf<Pair<Record, String>>(
+    private val recordTypeClassTestData = listOf(
         BibliographicRecord() to "Bibliographic",
         HoldingsRecord() to "Holdings",
         AuthorityRecord() to "Authority",

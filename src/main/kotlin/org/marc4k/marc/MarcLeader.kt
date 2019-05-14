@@ -8,7 +8,6 @@ class MarcLeader : Leader {
     var recordStatus by Delegates.observable(_recordStatus) { _, _, newValue -> _recordStatus = newValue }
     var typeOfRecord by Delegates.observable(_typeOfRecord) { _, _, newValue -> _typeOfRecord = newValue }
     var implementationDefined1 by Delegates.observable(_implementationDefined1) { _, _, newValue -> _implementationDefined1 = newValue }
-    var characterCodingScheme by Delegates.observable(_characterCodingScheme) { _, _, newValue -> _characterCodingScheme = newValue }
     var indicatorCount by Delegates.observable(_indicatorCount) { _, _, newValue -> _indicatorCount = newValue }
     var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) { _, _, newValue -> _subfieldCodeCount = newValue }
     var baseAddressOfData by Delegates.observable(_baseAddressOfData) { _, _, newValue -> _baseAddressOfData = newValue }
@@ -30,8 +29,7 @@ class MarcLeader : Leader {
         recordLength = data.substring(0..4).toIntOrNull() ?: 0
         recordStatus = data[5]
         typeOfRecord = data[6]
-        implementationDefined1 = data.substring(7..8).toCharArray()
-        characterCodingScheme = data[9]
+        implementationDefined1 = data.substring(7..9).toCharArray()
         indicatorCount = if (data[10].isDigit()) data[10].toString().toInt() else 2
         subfieldCodeCount = if (data[11].isDigit()) data[11].toString().toInt() else 2
         baseAddressOfData = data.substring(12..16).toIntOrNull() ?: 0

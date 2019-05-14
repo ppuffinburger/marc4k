@@ -5,8 +5,7 @@ abstract class Leader {
     protected var _recordLength = 0
     protected var _recordStatus = ' '
     protected var _typeOfRecord = ' '
-    protected var _implementationDefined1 = charArrayOf(' ', ' ')
-    protected var _characterCodingScheme = ' '
+    protected var _implementationDefined1 = charArrayOf(' ', ' ', ' ')
     protected var _indicatorCount = 0
     protected var _subfieldCodeCount = 0
     protected var _baseAddressOfData = 0
@@ -21,7 +20,6 @@ abstract class Leader {
             append(_recordStatus)
             append(_typeOfRecord)
             append(_implementationDefined1)
-            append(_characterCodingScheme)
             append(_indicatorCount)
             append(_subfieldCodeCount)
             append(_baseAddressOfData.toString().padStart(5, '0'))

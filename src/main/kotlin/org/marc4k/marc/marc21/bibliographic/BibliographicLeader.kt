@@ -11,7 +11,7 @@ class BibliographicLeader : Leader {
     var typeOfRecord by Delegates.observable(TypeOfRecord.fromValue(_typeOfRecord)) { _, _, newValue -> _typeOfRecord = newValue.value }
     var bibliographicLevel by Delegates.observable(BibliographicLevel.fromValue(_implementationDefined1[0])) { _, _, newValue -> _implementationDefined1[0] = newValue.value }
     var typeOfControl by Delegates.observable(TypeOfControl.fromValue(_implementationDefined1[1])) { _, _, newValue -> _implementationDefined1[1] = newValue.value }
-    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_characterCodingScheme)) { _, _, newValue -> _characterCodingScheme = newValue.value }
+    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_implementationDefined1[2])) { _, _, newValue -> _implementationDefined1[2] = newValue.value }
     var indicatorCount by Delegates.observable(_indicatorCount) { _, _, newValue -> _indicatorCount = newValue }
     var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) { _, _, newValue -> _subfieldCodeCount = newValue }
     var baseAddressOfData by Delegates.observable(_baseAddressOfData) { _, _, newValue -> _baseAddressOfData = newValue }
@@ -75,7 +75,7 @@ enum class RecordStatus(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = RecordStatus.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -98,7 +98,7 @@ enum class TypeOfRecord(val value: Char) {
     INVALID('\u0000'),;
 
     companion object {
-        private val map = TypeOfRecord.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -114,7 +114,7 @@ enum class BibliographicLevel(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = BibliographicLevel.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -125,7 +125,7 @@ enum class TypeOfControl(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = TypeOfControl.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -144,7 +144,7 @@ enum class EncodingLevel(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = EncodingLevel.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -159,7 +159,7 @@ enum class DescriptiveCatalogingForm(val value: Char) {
     INVALID('\u0000'),;
 
     companion object {
-        private val map = DescriptiveCatalogingForm.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -172,7 +172,7 @@ enum class MultipartResourceRecordLevel(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = MultipartResourceRecordLevel.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }

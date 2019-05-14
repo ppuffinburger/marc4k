@@ -11,7 +11,7 @@ class CommunityLeader : Leader {
     var typeOfRecord by Delegates.observable(TypeOfRecord.fromValue(_typeOfRecord)) { _, _, newValue -> _typeOfRecord = newValue.value }
     var kindOfData by Delegates.observable(KindOfData.fromValue(_implementationDefined1[0])) { _, _, newValue -> _implementationDefined1[0] = newValue.value }
     var undefinedPosition8 by Delegates.observable(_implementationDefined1[1]) { _, _, newValue -> _implementationDefined1[1] = newValue }
-    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_characterCodingScheme)) { _, _, newValue -> _characterCodingScheme = newValue.value }
+    var characterCodingScheme by Delegates.observable(CharacterCodingScheme.fromValue(_implementationDefined1[2])) { _, _, newValue -> _implementationDefined1[2] = newValue.value }
     var indicatorCount by Delegates.observable(_indicatorCount) { _, _, newValue -> _indicatorCount = newValue }
     var subfieldCodeCount by Delegates.observable(_subfieldCodeCount) { _, _, newValue -> _subfieldCodeCount = newValue }
     var baseAddressOfData by Delegates.observable(_baseAddressOfData) { _, _, newValue -> _baseAddressOfData = newValue }
@@ -72,7 +72,7 @@ enum class RecordStatus(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = RecordStatus.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -82,7 +82,7 @@ enum class TypeOfRecord(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = TypeOfRecord.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -96,7 +96,7 @@ enum class KindOfData(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = KindOfData.values().associateBy { it.value }
+        private val map = values().associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }

@@ -1,10 +1,9 @@
 package org.marc4k.marc.marc21.authority
 
 import org.marc4k.marc.DataField
-import org.marc4k.marc.Record
 import org.marc4k.marc.marc21.Marc21Record
 
-class AuthorityRecord : Record(), Marc21Record {
+class AuthorityRecord : Marc21Record() {
     override val leader = AuthorityLeader()
 
     override fun getValid008Data(): String? = controlFields.firstOrNull { it.tag == "008" && it.data.length == 40 }?.data

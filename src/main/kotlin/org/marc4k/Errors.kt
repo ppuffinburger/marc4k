@@ -7,7 +7,6 @@ sealed class MarcError {
         override fun toString() =
             "Field Index: $fieldIndex Tag: $tag${System.lineSeparator()}${errors.joinToString(System.lineSeparator()) { "\t$it" }}"
     }
-
     data class StructuralError(val message: String) : MarcError()
 }
 

@@ -6,7 +6,7 @@ enum class CharacterCodingScheme(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = CharacterCodingScheme.values().associateBy(CharacterCodingScheme::value)
+        private val map = values().associateBy(CharacterCodingScheme::value)
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }

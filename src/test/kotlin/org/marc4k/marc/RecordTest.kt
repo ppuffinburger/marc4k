@@ -82,8 +82,7 @@ internal class RecordTest {
             _recordLength = data.substring(0..4).toIntOrNull() ?: 0
             _recordStatus = data[5]
             _typeOfRecord = data[6]
-            _implementationDefined1 = data.substring(7..8).toCharArray()
-            _characterCodingScheme = data[9]
+            _implementationDefined1 = data.substring(7..9).toCharArray()
             _indicatorCount = if (data[10].isDigit()) data[10].toString().toInt() else 2
             _subfieldCodeCount = if (data[11].isDigit()) data[11].toString().toInt() else 2
             _baseAddressOfData = data.substring(12..16).toIntOrNull() ?: 0
