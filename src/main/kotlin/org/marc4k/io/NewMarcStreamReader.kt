@@ -76,7 +76,7 @@ class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecod
             throw MarcException("Expected field terminator at end of directory")
         }
 
-        val iso2709Record = Iso2709Record(leaderBytes).apply {
+        val iso2709Record = Iso2709Record(leaderBytes.toString(Charsets.ISO_8859_1)).apply {
             parseFields(recordBytes.copyOfRange(baseAddressOfData, recordBytes.lastIndex), directoryEntries, this)
         }
 
@@ -208,29 +208,25 @@ abstract class MarcDataDecoder {
 
         applyConverter = setApplyConverter(iso2709Record)
 
-        val record = MarcRecord().apply {
-            leader.setData(iso2709Record.leaderBytes.toString(Charsets.ISO_8859_1))
-        }
-
-        record.controlFields +=
-            iso2709Record.controlFields.mapIndexed { index, field ->
-                ControlField(field.tag, getDataAsString(index, field.tag, field.data))
-            }
-
-        record.dataFields +=
-            iso2709Record.dataFields.mapIndexed { index, field ->
-                DataField(field.tag, field.indicator1, field.indicator2).apply {
-                    subfields += field.subfields.map { subfield ->
-                        Subfield(subfield.name, getDataAsString(index + iso2709Record.controlFields.size, field.tag, subfield.data))
+        return MarcRecord().apply {
+            leader.setData(iso2709Record.leader)
+            controlFields +=
+                iso2709Record.controlFields.mapIndexed { index, field ->
+                    ControlField(field.tag, getDataAsString(index, field.tag, field.data))
+                }
+            dataFields +=
+                iso2709Record.dataFields.mapIndexed { index, field ->
+                    DataField(field.tag, field.indicator1, field.indicator2).apply {
+                        subfields += field.subfields.map { subfield ->
+                            Subfield(subfield.name, getDataAsString(index + iso2709Record.controlFields.size, field.tag, subfield.data))
+                        }
                     }
                 }
+
+            if (recordErrors.isNotEmpty()) {
+                errors += recordErrors
             }
-
-        if (recordErrors.isNotEmpty()) {
-            record.errors += recordErrors
         }
-
-        return record
     }
 }
 
@@ -280,7 +276,7 @@ class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private 
 
 class Marc21DataDecoder(private val converter: CharacterConverter) : MarcDataDecoder() {
     override fun setApplyConverter(iso2709Record: Iso2709Record): Boolean {
-        return iso2709Record.leaderBytes[CHARACTER_CODING_SCHEME_POSITION] == MARC8_SCHEME_VALUE
+        return iso2709Record.leader[CHARACTER_CODING_SCHEME_POSITION] == MARC8_SCHEME_CHARACTER
     }
 
     override fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
@@ -299,12 +295,12 @@ class Marc21DataDecoder(private val converter: CharacterConverter) : MarcDataDec
 
     companion object {
         private const val CHARACTER_CODING_SCHEME_POSITION = 9
-        private const val MARC8_SCHEME_VALUE = ' '.toByte()
+        private const val MARC8_SCHEME_CHARACTER = ' '
     }
 }
 
 @Suppress("ArrayInDataClass")
-data class Iso2709Record(val leaderBytes: ByteArray, val controlFields: MutableList<Iso2709ControlField> = mutableListOf(), val dataFields: MutableList<Iso2709DataField> = mutableListOf())
+data class Iso2709Record(val leader: String, val controlFields: MutableList<Iso2709ControlField> = mutableListOf(), val dataFields: MutableList<Iso2709DataField> = mutableListOf())
 
 @Suppress("ArrayInDataClass")
 data class Iso2709ControlField(val tag: String, val data: ByteArray)
