@@ -3,6 +3,7 @@ package org.marc4k.io
 import org.marc4k.*
 import org.marc4k.converter.CharacterConverter
 import org.marc4k.converter.CharacterConverterResult
+import org.marc4k.converter.marc8.UnicodeToMarc8
 import org.marc4k.marc.CustomDecimalFormat
 import org.marc4k.marc.MarcRecord
 import org.marc4k.marc.Record
@@ -175,7 +176,7 @@ class DefaultMarcDataEncoder(private var encoding: String = ISO_8859_1, private 
     }
 }
 
-class Marc21DataEncoder(private val converter: CharacterConverter) : MarcDataEncoder() {
+class Marc21DataEncoder(private val converter: UnicodeToMarc8 = UnicodeToMarc8()) : MarcDataEncoder() {
     override fun setApplyConverter(marcRecord: MarcRecord): Boolean {
         return marcRecord.leader.implementationDefined1[2] == MARC8_SCHEME_CHARACTER
     }

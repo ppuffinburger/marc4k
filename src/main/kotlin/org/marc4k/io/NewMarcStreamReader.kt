@@ -3,6 +3,7 @@ package org.marc4k.io
 import org.marc4k.*
 import org.marc4k.converter.CharacterConverter
 import org.marc4k.converter.CharacterConverterResult
+import org.marc4k.converter.marc8.Marc8ToUnicode
 import org.marc4k.marc.*
 import java.io.*
 import java.nio.charset.Charset
@@ -274,7 +275,7 @@ class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private 
     }
 }
 
-class Marc21DataDecoder(private val converter: CharacterConverter) : MarcDataDecoder() {
+class Marc21DataDecoder(private val converter: Marc8ToUnicode = Marc8ToUnicode()) : MarcDataDecoder() {
     override fun setApplyConverter(iso2709Record: Iso2709Record): Boolean {
         return iso2709Record.leader[CHARACTER_CODING_SCHEME_POSITION] == MARC8_SCHEME_CHARACTER
     }
