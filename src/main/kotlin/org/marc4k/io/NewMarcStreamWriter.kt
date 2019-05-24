@@ -1,17 +1,14 @@
 package org.marc4k.io
 
 import org.marc4k.*
-import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.CharacterConverterResult
-import org.marc4k.converter.marc8.UnicodeToMarc8
+import org.marc4k.io.codec.DefaultMarcDataEncoder
+import org.marc4k.io.codec.MarcDataEncoder
 import org.marc4k.marc.CustomDecimalFormat
 import org.marc4k.marc.MarcRecord
 import org.marc4k.marc.Record
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
-import java.io.UnsupportedEncodingException
-import java.nio.charset.Charset
 
 class NewMarcStreamWriter(private val output: OutputStream, private val allowOversizeRecord: Boolean = false, private val encoder: MarcDataEncoder = DefaultMarcDataEncoder()) : MarcWriter {
     private var hasOversizeLength = false
@@ -101,100 +98,5 @@ class NewMarcStreamWriter(private val output: OutputStream, private val allowOve
     companion object {
         private val FOUR_DIGIT_DECIMAL_FORMAT = CustomDecimalFormat(4)
         private val FIVE_DIGIT_DECIMAL_FORMAT = CustomDecimalFormat(5)
-    }
-}
-
-abstract class MarcDataEncoder {
-    protected var applyConverter = false
-
-    protected abstract fun setApplyConverter(marcRecord: MarcRecord): Boolean
-    protected abstract fun getDataAsBytes(data: String): ByteArray
-
-    fun createIso2709Record(marcRecord: MarcRecord): Iso2709Record {
-        applyConverter = setApplyConverter(marcRecord)
-
-        val iso2709Record = Iso2709Record(marcRecord.leader.getData())
-
-        iso2709Record.controlFields +=
-            marcRecord.controlFields.map { field ->
-                Iso2709ControlField(field.tag, getDataAsBytes(field.data))
-            }
-
-        iso2709Record.dataFields +=
-            marcRecord.dataFields.map { field ->
-                Iso2709DataField(field.tag, field.indicator1, field.indicator2).apply {
-                    subfields += field.subfields.map { subfield ->
-                        Iso2709Subfield(subfield.name, getDataAsBytes(subfield.data))
-                    }
-                }
-            }
-
-        return iso2709Record
-    }
-}
-
-class DefaultMarcDataEncoder(private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcDataEncoder() {
-    init {
-        encoding = parseEncoding(encoding)
-    }
-
-    override fun setApplyConverter(marcRecord: MarcRecord): Boolean = true
-
-    override fun getDataAsBytes(data: String): ByteArray {
-        if (converter != null && applyConverter) {
-            return when (val converterResult = converter.convert(data)) {
-                is CharacterConverterResult.Success -> converterResult.conversion.toByteArray(Charset.forName(encoding))
-                is CharacterConverterResult.WithErrors -> {
-                    throw MarcException("Character conversion resulted in errors: ${converterResult.errors}")
-                }
-            }
-        } else {
-            return when (encoding) {
-                UTF_8 -> {
-                    data.toByteArray(Charsets.UTF_8)
-                }
-                ISO_8859_1 -> {
-                    data.toByteArray(Charsets.ISO_8859_1)
-                }
-                else -> {
-                    try {
-                        data.toByteArray(Charset.forName(encoding))
-                    } catch (e: UnsupportedEncodingException) {
-                        throw MarcException("Unsupported encoding", e)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
-            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
-            "UTF8", "UTF-8" -> UTF_8
-            else -> encoding
-        }
-    }
-}
-
-class Marc21DataEncoder(private val converter: UnicodeToMarc8 = UnicodeToMarc8()) : MarcDataEncoder() {
-    override fun setApplyConverter(marcRecord: MarcRecord): Boolean {
-        return marcRecord.leader.implementationDefined1[2] == MARC8_SCHEME_CHARACTER
-    }
-
-    override fun getDataAsBytes(data: String): ByteArray {
-        return if (applyConverter) {
-            when (val converterResult = converter.convert(data)) {
-                is CharacterConverterResult.Success -> converterResult.conversion.toByteArray(Charsets.ISO_8859_1)
-                is CharacterConverterResult.WithErrors -> {
-                    throw MarcException("Character conversion resulted in errors: ${converterResult.errors}")
-                }
-            }
-        } else {
-            data.toByteArray(Charsets.UTF_8)
-        }
-    }
-
-    companion object {
-        private const val MARC8_SCHEME_CHARACTER = ' '
     }
 }

@@ -1,12 +1,10 @@
 package org.marc4k.io
 
 import org.marc4k.*
-import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.CharacterConverterResult
-import org.marc4k.converter.marc8.Marc8ToUnicode
-import org.marc4k.marc.*
+import org.marc4k.io.codec.*
+import org.marc4k.marc.MarcRecord
+import org.marc4k.marc.Record
 import java.io.*
-import java.nio.charset.Charset
 import java.util.function.Consumer
 
 class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecoder = DefaultMarcDataDecoder()) : MarcReader {
@@ -195,118 +193,3 @@ class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecod
         private const val FIELD_TERMINATOR_BYTE = FIELD_TERMINATOR.toByte()
     }
 }
-
-
-abstract class MarcDataDecoder {
-    protected var applyConverter = false
-    protected val recordErrors = mutableListOf<MarcError>()
-
-    protected abstract fun setApplyConverter(iso2709Record: Iso2709Record): Boolean
-    protected abstract fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String
-
-    fun createMarcRecord(iso2709Record: Iso2709Record): MarcRecord {
-        recordErrors.clear()
-
-        applyConverter = setApplyConverter(iso2709Record)
-
-        return MarcRecord().apply {
-            leader.setData(iso2709Record.leader)
-            controlFields +=
-                iso2709Record.controlFields.mapIndexed { index, field ->
-                    ControlField(field.tag, getDataAsString(index, field.tag, field.data))
-                }
-            dataFields +=
-                iso2709Record.dataFields.mapIndexed { index, field ->
-                    DataField(field.tag, field.indicator1, field.indicator2).apply {
-                        subfields += field.subfields.map { subfield ->
-                            Subfield(subfield.name, getDataAsString(index + iso2709Record.controlFields.size, field.tag, subfield.data))
-                        }
-                    }
-                }
-
-            if (recordErrors.isNotEmpty()) {
-                errors += recordErrors
-            }
-        }
-    }
-}
-
-class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcDataDecoder() {
-    init {
-        encoding = parseEncoding(encoding)
-    }
-
-    override fun setApplyConverter(iso2709Record: Iso2709Record): Boolean = true
-
-    override fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
-        if (converter != null && applyConverter) {
-            return when (val converterResult = converter.convert(bytes)) {
-                is CharacterConverterResult.Success -> converterResult.conversion
-                is CharacterConverterResult.WithErrors -> {
-                    recordErrors += MarcError.EncodingError(fieldIndex, fieldTag, converterResult.errors)
-                    converterResult.conversion
-                }
-            }
-        } else {
-            return when (encoding) {
-                UTF_8 -> {
-                    bytes.toString(Charsets.UTF_8)
-                }
-                ISO_8859_1 -> {
-                    bytes.toString(Charsets.ISO_8859_1)
-                }
-                else -> {
-                    try {
-                        bytes.toString(Charset.forName(encoding))
-                    } catch (e: UnsupportedEncodingException) {
-                        throw MarcException("Unsupported encoding", e)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
-            "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
-            "UTF8", "UTF-8" -> UTF_8
-            else -> encoding
-        }
-    }
-}
-
-class Marc21DataDecoder(private val converter: Marc8ToUnicode = Marc8ToUnicode()) : MarcDataDecoder() {
-    override fun setApplyConverter(iso2709Record: Iso2709Record): Boolean {
-        return iso2709Record.leader[CHARACTER_CODING_SCHEME_POSITION] == MARC8_SCHEME_CHARACTER
-    }
-
-    override fun getDataAsString(fieldIndex: Int, fieldTag: String, bytes: ByteArray): String {
-        return if (applyConverter) {
-            when (val converterResult = converter.convert(bytes)) {
-                is CharacterConverterResult.Success -> converterResult.conversion
-                is CharacterConverterResult.WithErrors -> {
-                    recordErrors += MarcError.EncodingError(fieldIndex, fieldTag, converterResult.errors)
-                    converterResult.conversion
-                }
-            }
-        } else {
-            bytes.toString(Charsets.UTF_8)
-        }
-    }
-
-    companion object {
-        private const val CHARACTER_CODING_SCHEME_POSITION = 9
-        private const val MARC8_SCHEME_CHARACTER = ' '
-    }
-}
-
-@Suppress("ArrayInDataClass")
-data class Iso2709Record(val leader: String, val controlFields: MutableList<Iso2709ControlField> = mutableListOf(), val dataFields: MutableList<Iso2709DataField> = mutableListOf())
-
-@Suppress("ArrayInDataClass")
-data class Iso2709ControlField(val tag: String, val data: ByteArray)
-
-data class Iso2709DataField(val tag: String, val indicator1: Char, val indicator2: Char, val subfields: MutableList<Iso2709Subfield> = mutableListOf())
-
-@Suppress("ArrayInDataClass")
-data class Iso2709Subfield(val name: Char, val data: ByteArray)

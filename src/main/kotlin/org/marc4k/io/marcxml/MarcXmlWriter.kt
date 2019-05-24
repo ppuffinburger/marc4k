@@ -15,6 +15,7 @@ import org.marc4k.unicodeToHex
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.AttributesImpl
 import java.io.*
+import java.nio.charset.UnsupportedCharsetException
 import java.text.Normalizer
 import java.util.regex.Pattern
 import javax.xml.transform.OutputKeys
@@ -47,7 +48,7 @@ class MarcXmlWriter : MarcWriter {
             handler = createHandler(StreamResult(writer), null)
 
             writeStartDocument()
-        } catch (e: UnsupportedEncodingException) {
+        } catch (e: UnsupportedCharsetException) {
             throw MarcException(e.message, e)
         }
     }

@@ -6,6 +6,7 @@ import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.marc.*
 import java.io.*
 import java.nio.charset.Charset
+import java.nio.charset.UnsupportedCharsetException
 import java.util.function.Consumer
 
 class MarcStreamReader(input: InputStream, private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcReader {
@@ -239,7 +240,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = ISO_88
                 else -> {
                     try {
                         bytes.toString(Charset.forName(encoding))
-                    } catch (e: UnsupportedEncodingException) {
+                    } catch (e: UnsupportedCharsetException) {
                         throw MarcException("Unsupported encoding", e)
                     }
                 }

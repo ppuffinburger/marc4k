@@ -53,10 +53,7 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
                     directory.write(FIELD_TERMINATOR)
 
                     val baseAddressOfData = LEADER_LENGTH + directory.size()
-                    recordToWrite.leader.baseAddressOfData = FIVE_DIGIT_DECIMAL_FORMAT.format(baseAddressOfData).toInt()
-
                     val recordLength = baseAddressOfData + data.size() + 1
-                    recordToWrite.leader.recordLength = FIVE_DIGIT_DECIMAL_FORMAT.format(recordLength).toInt()
 
                     if (!allowOversizeRecord && (baseAddressOfData > 99999 || recordLength > 99999 || hasOversizeOffset)) {
                         throw MarcException("Record is too long to be a valid MARC binary record, it's length would be $recordLength which is more than 99999 bytes")
@@ -66,7 +63,16 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
                         throw MarcException("Record has field that is too long to be a valid MARC binary record. The maximum length for a field counting all of the sub-fields is 9999 bytes.")
                     }
 
-                    output.write(recordToWrite.leader.getData().toByteArray(Charsets.ISO_8859_1))
+                    val newLeaderBytes = with(StringBuilder()) {
+                        val currentLeader = recordToWrite.leader.getData()
+                        append(FIVE_DIGIT_DECIMAL_FORMAT.format(recordLength))
+                        append(currentLeader.substring(5..11))
+                        append(FIVE_DIGIT_DECIMAL_FORMAT.format(baseAddressOfData))
+                        append(currentLeader.substring(17))
+                        toString().toByteArray(Charsets.ISO_8859_1)
+                    }
+
+                    output.write(newLeaderBytes)
                     output.write(directory.toByteArray())
                     output.write(data.toByteArray())
                     output.write(RECORD_TERMINATOR)
