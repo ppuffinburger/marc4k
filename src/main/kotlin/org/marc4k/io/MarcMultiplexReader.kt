@@ -18,7 +18,9 @@ class MarcMultiplexReader(readers: List<MarcReader>) : MarcReader {
         return currentReader?.next() ?: throw MarcException("Current file reader became null before call to next()")
     }
 
-    override fun close() {}
+    override fun close() {
+        currentReader?.close()
+    }
 
     private fun getNextMarcReader(): MarcReader? {
         currentReader?.close()

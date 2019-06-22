@@ -29,7 +29,9 @@ class MarcDirectoryStreamReader(directory: File, private val decoder: MarcDataDe
         }
     }
 
-    override fun close() {}
+    override fun close() {
+        currentFileReader?.close()
+    }
 
     private fun getNextMarcReader(): MarcReader? {
         currentFileReader?.close()
