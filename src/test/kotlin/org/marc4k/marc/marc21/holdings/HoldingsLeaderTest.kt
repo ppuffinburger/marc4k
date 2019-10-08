@@ -48,7 +48,7 @@ internal class HoldingsLeaderTest {
         val leaderCopy = HoldingsLeader(leaderOriginal)
         assertAll(
             { assertThat(leaderCopy).isNotSameAs(leaderOriginal) },
-            { assertThat(leaderCopy).isEqualToComparingFieldByFieldRecursively(leaderOriginal) }
+            { assertThat(leaderCopy).usingRecursiveComparison().isEqualTo(leaderOriginal) }
         )
     }
 

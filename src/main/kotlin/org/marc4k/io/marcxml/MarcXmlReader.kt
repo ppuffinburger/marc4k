@@ -21,7 +21,7 @@ class MarcXmlReader : MarcReader {
         startParsing(inputStream)
     }
 
-    constructor(inputStream: InputStream, stylesheet: String) : this(inputStream, StreamSource(stylesheet))
+    constructor(inputStream: InputStream, stylesheet: String) : this(inputStream = inputStream, stylesheet = StreamSource(stylesheet))
 
     constructor(inputStream: InputStream, stylesheet: Source) {
         try {

@@ -47,7 +47,7 @@ internal class BibliographicLeaderTest {
         val leaderCopy = BibliographicLeader(leaderOriginal)
         assertAll(
             { assertThat(leaderCopy).isNotSameAs(leaderOriginal) },
-            { assertThat(leaderCopy).isEqualToComparingFieldByFieldRecursively(leaderOriginal) }
+            { assertThat(leaderCopy).usingRecursiveComparison().isEqualTo(leaderOriginal) }
         )
     }
 

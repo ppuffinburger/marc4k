@@ -58,7 +58,7 @@ class MarcXmlWriter : MarcWriter {
         writeStartDocument()
     }
 
-    constructor(result: Result, styleSheet: String) : this(result, StreamSource(styleSheet))
+    constructor(result: Result, styleSheet: String) : this(result = result, styleSheet = StreamSource(styleSheet))
 
     constructor(result: Result, styleSheet: Source) {
         handler = createHandler(result, styleSheet)

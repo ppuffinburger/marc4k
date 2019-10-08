@@ -48,7 +48,7 @@ internal class ClassificationLeaderTest {
         val leaderCopy = ClassificationLeader(leaderOriginal)
         assertAll(
             { assertThat(leaderCopy).isNotSameAs(leaderOriginal) },
-            { assertThat(leaderCopy).isEqualToComparingFieldByFieldRecursively(leaderOriginal) }
+            { assertThat(leaderCopy).usingRecursiveComparison().isEqualTo(leaderOriginal) }
         )
     }
 

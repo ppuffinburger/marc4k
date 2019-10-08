@@ -48,7 +48,7 @@ internal class CommunityLeaderTest {
         val leaderCopy = CommunityLeader(leaderOriginal)
         assertAll(
             { assertThat(leaderCopy).isNotSameAs(leaderOriginal) },
-            { assertThat(leaderCopy).isEqualToComparingFieldByFieldRecursively(leaderOriginal) }
+            { assertThat(leaderCopy).usingRecursiveComparison().isEqualTo(leaderOriginal) }
         )
     }
 

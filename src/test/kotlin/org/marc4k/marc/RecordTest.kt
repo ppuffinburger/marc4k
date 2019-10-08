@@ -50,7 +50,7 @@ internal class RecordTest {
 
         assertAll(
             { assertThat(copy).isNotSameAs(original) },
-            { assertThat(copy).isEqualToComparingFieldByFieldRecursively(original) }
+            { assertThat(copy).usingRecursiveComparison().isEqualTo(original) }
         )
     }
 

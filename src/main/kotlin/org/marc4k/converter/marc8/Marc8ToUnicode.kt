@@ -17,7 +17,10 @@ class Marc8ToUnicode : CharacterConverter {
     private var loadedMultiByteCodeTable = false
 
     constructor(loadMultiByteCodeTable: Boolean = false, translateNcr: Boolean = false)
-            : this(if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml") else Marc8ToUnicode::class.java.getResourceAsStream("/codetablesnocjk.xml"), translateNcr) {
+            : this(
+        inputStream = if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml") else Marc8ToUnicode::class.java.getResourceAsStream("/codetablesnocjk.xml"),
+        translateNcr = translateNcr
+    ) {
         loadedMultiByteCodeTable = loadMultiByteCodeTable
     }
 

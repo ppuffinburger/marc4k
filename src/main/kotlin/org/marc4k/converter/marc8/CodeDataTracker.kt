@@ -26,8 +26,6 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
         return undo.peek()
     }
 
-    fun canUndo() = undo.isNotEmpty()
-
     fun undo() = undo.peek()?.let { stack.push(undo.pop()) }
 
     fun rollback() {
@@ -64,6 +62,8 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
     }
 
     fun getTrackerWithCurrentBuffer() = CodeDataTracker(stack.toCharArray(), g0, g1)
+
+    private fun canUndo() = undo.isNotEmpty()
 
     private fun isControlCharacter(character: Char): Boolean {
         return when(character) {

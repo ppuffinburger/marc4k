@@ -7,7 +7,8 @@ import org.xml.sax.helpers.DefaultHandler
 
 class ReverseCodeTableHandler(private val reverseCodeTableHandlerCallback: ReverseCodeTableHandlerCallback) : DefaultHandler() {
     private var currentIsoCode: IsoCode = -1
-    private var currentCodeData: ReverseCodeTableHandler.CodeData = ReverseCodeTableHandler.CodeData()
+    private var currentCodeData: CodeData =
+        CodeData()
 
     private val currentCharacterSet = mutableListOf<Pair<Char, CharArray>>()
     private val currentCombiningCharacters = mutableSetOf<Char>()
@@ -24,7 +25,7 @@ class ReverseCodeTableHandler(private val reverseCodeTableHandlerCallback: Rever
                     ?: throw MarcException("CodeTable does not contain an ISOcode attribute")
             }
             "code" -> {
-                currentCodeData = ReverseCodeTableHandler.CodeData()
+                currentCodeData = CodeData()
             }
         }
     }
@@ -79,11 +80,13 @@ class ReverseCodeTableHandler(private val reverseCodeTableHandlerCallback: Rever
         }
     }
 
-    private class CodeData {
-        var marc8Characters = mutableListOf<Char>()
-        var ucs: Char? = null
-        var altUcs: Char? = null
-        var isCombining = false
+    companion object {
+        private class CodeData {
+            var marc8Characters = mutableListOf<Char>()
+            var ucs: Char? = null
+            var altUcs: Char? = null
+            var isCombining = false
+        }
     }
 }
 
