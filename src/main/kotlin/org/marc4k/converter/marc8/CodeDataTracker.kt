@@ -12,7 +12,7 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
     val offset: Int
         get() = history.size + undo.size
 
-    fun isEACC() = g0 == 0x31 || g1 == 0x31
+    fun isEACC() = g0 == CJK_GRAPHIC_ISO_CODE || g1 == CJK_GRAPHIC_ISO_CODE
 
     fun isEmpty() = stack.isEmpty()
 
