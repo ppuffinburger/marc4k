@@ -4,10 +4,38 @@
 
   <groupId>org.marc4k</groupId>
   <artifactId>marc4k</artifactId>
-  <version>0.8.1</version>
+  <version>0.8.2</version>
   <packaging>jar</packaging>
 
-  <name>org.marc4k marc4k</name>
+  <name>MARC4K</name>
+  <description>Application Programming Interface (API) for working with MARC and MARCXML in Java.</description>
+  <url>https://github.com/ppuffinburger/marc4k</url>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License, Version 2.1</name>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <comments>Licensed under the GNU LGPL 2.1 or later (at your option)</comments>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/ppuffinburger/marc4k/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <name>Philip Puffinburger</name>
+      <email>pkp.github@gmail.com</email>
+      <url>https://github.com/ppuffinburger</url>
+      <roles>
+        <role>Project Creator</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>America/Los_Angeles</timezone>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
