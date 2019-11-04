@@ -1,4 +1,4 @@
-# MARC4K
+# MARC4K ![Build Status](https://github.com/ppuffinburger/marc4k/workflows/Build/badge.svg)
 
 ## Mission
 
