@@ -9,7 +9,7 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 
 class MarcDirectoryStreamReader(directory: File, private val decoder: MarcDataDecoder = DefaultMarcDataDecoder()) : MarcReader {
-    private val fileIterator: Iterator<String> = directory.walk().filter { !it.isDirectory && it.extension == "mrc" }.map { it.canonicalPath }.toList().iterator()
+    private val fileIterator: Iterator<String> = directory.walk().filter { !it.isDirectory && it.extension == "mrc" }.map { it.absolutePath }.toList().iterator()
     private var currentFileReader: MarcReader? = getNextMarcReader()
 
     constructor(directory: String, decoder: MarcDataDecoder = DefaultMarcDataDecoder()) : this(File(directory), decoder)

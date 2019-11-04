@@ -53,8 +53,8 @@ internal class MarcDirectoryStreamReaderTest {
     fun `test removing file before iteration`() {
         val tempDirectory = Files.createTempDirectory("MARC4K-MDSRT-").toFile().apply { deleteOnExit() }
 
-        val marc8File = File("src/test/resources/records/walktest/marc8/MARC8_auth_record.mrc").copyTo(File("${tempDirectory.canonicalPath}/MARC8_auth_record.mrc")).apply { deleteOnExit() }
-        File("src/test/resources/records/walktest/utf8/UTF8_auth_record.mrc").copyTo(File("${tempDirectory.canonicalPath}/UTF8_auth_record.mrc")).apply { deleteOnExit() }
+        val marc8File = File("src/test/resources/records/walktest/marc8/MARC8_auth_record.mrc").copyTo(File("${tempDirectory.absolutePath}/MARC8_auth_record.mrc")).apply { deleteOnExit() }
+        File("src/test/resources/records/walktest/utf8/UTF8_auth_record.mrc").copyTo(File("${tempDirectory.absolutePath}/UTF8_auth_record.mrc")).apply { deleteOnExit() }
 
         MarcDirectoryStreamReader(tempDirectory, Marc21DataDecoder()).use { reader ->
             marc8File.delete()
