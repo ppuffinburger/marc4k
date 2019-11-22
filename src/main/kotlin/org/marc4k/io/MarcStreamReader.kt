@@ -129,7 +129,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = ISO_88
         }
 
         val entries = ArrayList<Triple<String, Int, Int>>(directoryBytes.size / DIRECTORY_ENTRY_LENGTH)
-        for (offset in 0 until directoryBytes.size step DIRECTORY_ENTRY_LENGTH) {
+        for (offset in directoryBytes.indices step DIRECTORY_ENTRY_LENGTH) {
             entries.add(Triple(
                 directoryBytes.copyOfRange(offset, offset + 3).toString(Charsets.ISO_8859_1),
                 parseNumber(directoryBytes.copyOfRange(offset + 3, offset + 7)),
