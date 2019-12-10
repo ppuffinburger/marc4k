@@ -21,6 +21,7 @@ The MARC4K library includes:
 * Support for conversions between MARC and MARCXML.
 * Tight integration with the JAXP, DOM and SAX2 interfaces.
 * Easy to integrate with other XML interfaces like DOM, XOM, JDOM or DOM4J.
+* Conversion of the MarcMaker/MarcBreaker format in both MARC8 and UCS/Unicode
 
 MARC4K provides readers and writers for MARC and MARCXML. A `org.marc4k.io.MarcReader` implementation parses input data and provides an iterator over a collection of `org.marc4k.marc.Record` objects. The record object model is also suitable for in-memory editing of MARC records, just as DOM is used for XML editing purposes. Using a `org.marc4k.io.MarcWriter` implementation it is possible to create MARC or MARCXML. Once MARC data has been converted to XML you can further process the result with XSLT, for example to convert MARC to [MODS](https://www.loc.gov/standards/mods/ "MODS").
 

@@ -1,0 +1,203 @@
+***************************************************************************
+*                                                                         *
+*  MARC21-TO-TEXT                         DATE: July 3, 2002              *
+*  CHARACTER CONVERSION TABLE FOR MARCBrkr Version 2.5                    *
+*                                                                         *
+*  Source: Randall K. Barry (RBAR@LOC.GOV)                                *
+*          Library of Congress                                            *
+*          Network Development and MARC Standards Office                  *
+*          Washington, D.C. 20540-4102  U.S.A.                            *
+*                                                                         *
+***************************************************************************
+*                                                                         *
+* Convert any hexadecimal (or decimal) value listed to its mnemonic.      *
+*   Other hexadecimal (or decimal) values should be passed to the text    *
+*   file unchanged.                                                       *
+*                                                                         *
+* NOTE: Hexadecimal values 1D, 1E, and 1F are not listed since they have  *
+*   a special function in MARC records.                                   *
+*                                                                         *
+* Special processing should be applied to character strings in the MARC   *
+*   record beginning with an ampersand "&" (26x/038d), if the ampersand   *
+*   is not followed by a space.  The string, including the introductory   *
+*   ampersand, should be read through the first semicolon ";" (3Bx/059d). *
+*   If the semicolon is not encountered within 9 characters, including    *
+*   the ampersand, do not apply this special processing.  The ampersand   *
+*   and semicolon should be replaced by the opening and closing curly     *
+*   braces "{" (7Bx/123d) and "}" (7Dx/125d), respectively, to generate   *
+*   the corresponding mnemonic for the text file.  The curly braces are   *
+*   used in MARCMakr Version 2.5 to delimit mnemonics.                    *
+*   Thus "&zilch;" in the input MARC record file would be come "{zilch}"  *
+*   in the output text file.                                              *
+*                                                                         *
+* Mnemonics in this table are always enclosed in curly braces "{...}".    *
+*                                                                         *
+* Columns in this table are delimited by a comma ","                      *
+*                                                                         *
+***************************************************************************
+*                                                                         *
+* hex value, decimal value, mnemonic, *name/comment                       *
+* ??,        ???,           {...},    *[character name (FORMAT)]          *
+*_________________________________________________________________________*
+00x,000d,{00},*hex value 00 (MARC 21)
+01x,001d,{01},*hex value 01 (MARC 21)
+02x,002d,{02},*hex value 02 (MARC 21)
+03x,003d,{03},*hex value 03 (MARC 21)
+04x,004d,{04},*hex value 04 (MARC 21)
+05x,005d,{05},*hex value 05 (MARC 21)
+06x,006d,{06},*hex value 06 (MARC 21)
+07x,007d,{07},*hex value 07 (MARC 21)
+08x,008d,{08},*hex value 08 (MARC 21)
+09x,009d,{09},*hex value 09 (MARC 21)
+0Ax,010d,{0A},*hex value 0A (MARC 21)
+0Bx,011d,{0B},*hex value 0B (MARC 21)
+0Cx,012d,{0C},*hex value 0C (MARC 21)
+0Dx,013d,{0D},*hex value 0D (MARC 21)
+0Ex,014d,{0E},*hex value OE (MARC 21)
+0Fx,015d,{0F},*hex value OF (MARC 21)
+10x,016d,{10},*hex value 10 (MARC 21)
+11x,017d,{11},*hex value 11 (MARC 21)
+12x,018d,{12},*hex value 12 (MARC 21)
+13x,019d,{13},*hex value 13 (MARC 21)
+14x,020d,{14},*hex value 14 (MARC 21)
+15x,021d,{15},*hex value 15 (MARC 21)
+16x,022d,{16},*hex value 16 (MARC 21)
+17x,023d,{17},*hex value 17 (MARC 21)
+18x,024d,{18},*hex value 18 (MARC 21)
+19x,025d,{19},*hex value 19 (MARC 21)
+1Ax,026d,{1A},*hex value 1A (MARC 21)
+1Bx,027d,{esc},*escape (MARC 21)
+1Cx,028d,{1C},*hex value 1C (MARC 21)
+24x,036d,{dollar},*dollar sign (MARC 21)
+7Bx,123d,{lcub},*opening curly brace (MARC 21)
+7Dx,125d,{rcub},*closing curly brace (MARC 21)
+7Fx,127d,{7F},*hex value 7F (MARC 21)
+80x,128d,{80},*hex value 80 (MARC 21)
+81x,129d,{81},*hex value 81 (MARC 21)
+82x,130d,{82},*hex value 82 (MARC 21)
+83x,131d,{83},*hex value 83 (MARC 21)
+84x,132d,{84},*hex value 84 (MARC 21)
+85x,133d,{85},*hex value 85 (MARC 21)
+86x,134d,{86},*hex value 86 (MARC 21)
+87x,135d,{87},*hex value 87 (MARC 21)
+88x,136d,{88},*hex value 88 (MARC 21)
+89x,137d,{89},*hex value 89 (MARC 21)
+8Ax,138d,{8A},*hex value 8A (MARC 21)
+8Bx,139d,{8B},*hex value 8B (MARC 21)
+8Cx,140d,{8C},*hex value 8C (MARC 21)
+8Dx,141d,{joiner},*zero width joiner (MARC 21)
+8Ex,142d,{nonjoin},*zero width non-joiner (MARC 21)
+8Fx,143d,{8F},*hex value 8F (MARC 21)
+90x,144d,{90},*hex value 90 (MARC 21)
+91x,145d,{91},*hex value 91 (MARC 21)
+92x,146d,{92},*hex value 92 (MARC 21)
+93x,147d,{93},*hex value 93 (MARC 21)
+94x,148d,{94},*hex value 94 (MARC 21)
+95x,149d,{95},*hex value 95 (MARC 21)
+96x,150d,{96},*hex value 96 (MARC 21)
+97x,151d,{97},*hex value 97 (MARC 21)
+98x,152d,{98},*hex value 98 (MARC 21)
+99x,153d,{99},*hex value 99 (MARC 21)
+9Ax,154d,{9A},*hex value 9A (MARC 21)
+9Bx,155d,{9B},*hex value 9B (MARC 21)
+9Cx,156d,{9C},*hex value 9C (MARC 21)
+9Dx,157d,{9D},*hex value 9D (MARC 21)
+9Ex,158d,{9E},*hex value 9E (MARC 21)
+9Fx,159d,{9F},*hex value 9F (MARC 21)
+A0x,160d,{A0},*hex value A0 (MARC 21)
+A1x,161d,{Lstrok},*latin capital letter l with stroke (MARC 21)
+A2x,162d,{Ostrok},*latin capital letter o with stroke (MARC 21)
+A3x,163d,{Dstrok},*latin capital letter d with stroke (MARC 21)
+A4x,164d,{THORN},*latin capital letter thorn (icelandic) (MARC 21)
+A5x,165d,{AElig},*latin capital letter AE (MARC 21)
+A6x,166d,{OElig},*latin capital letter OE (MARC 21)
+A7x,167d,{softsign},*modifier letter soft sign (MARC 21)
+A8x,168d,{middot},*middle dot (MARC 21)
+A9x,169d,{flat},*musical flat sign (MARC 21)
+AAx,170d,{reg},*registered sign (MARC 21)
+ABx,171d,{plusmn},*plus-minus sign (MARC 21)
+ACx,172d,{Ohorn},*latin capital letter o with horn (MARC 21)
+ADx,173d,{Uhorn},*latin capital letter u with horn (MARC 21)
+AEx,174d,{mlrhring},*modifier letter right half ring (alif) (MARC 21)
+AFx,175d,{AF},*hex value AF (MARC 21)
+B0x,176d,{mllhring},*modifier letter left half ring (ayn) (MARC 21)
+B1x,177d,{lstrok},*latin small letter l with stroke (MARC 21)
+B2x,178d,{ostrok},*latin small letter o with stroke (MARC 21)
+B3x,179d,{dstrok},*latin small letter d with stroke (MARC 21)
+B4x,180d,{thorn},*latin small letter thorn (icelandic) (MARC 21)
+B5x,181d,{aelig},*latin small letter ae (MARC 21)
+B6x,182d,{oelig},*latin small letter oe (MARC 21)
+B7x,183d,{hardsign},*modifier letter hard sign (MARC 21)
+B8x,184d,{inodot},*latin small letter dotless i (MARC 21)
+B9x,185d,{pound},*pound sign (MARC 21)
+BAx,186d,{eth},*latin small letter eth (MARC 21)
+BBx,187d,{BB},*hex value BB (MARC 21)
+BCx,188d,{ohorn},*latin small letter o with horn (MARC 21)
+BDx,189d,{uhorn},*latin small letter u with horn (MARC 21)
+BEx,190d,{BE},*hex value BE (MARC 21)
+BFx,191d,{BF},*hex value BF (MARC 21)
+C0x,192d,{deg},*degree sign (MARC 21)
+C1x,193d,{scriptl},*latin small letter script l (MARC 21)
+C2x,194d,{phono},*sound recording copyright (MARC 21)
+C3x,195d,{copy},*copyright sign (MARC 21)
+C4x,196d,{sharp},*sharp (MARC 21)
+C5x,197d,{iquest},*inverted question mark (MARC 21)
+C6x,198d,{iexcl},*inverted exclamation mark (MARC 21)
+C7x,199d,{C7},*hex value C7 (MARC 21)
+C8x,200d,{euro},*hex value C8 (MARC 21)
+C9x,201d,{C9},*hex value C9 (MARC 21)
+CAx,202d,{CA},*hex value CA (MARC 21)
+CBx,203d,{CB},*hex value CB (MARC 21)
+CCx,204d,{CC},*hex value CC (MARC 21)
+CDx,205d,{CD},*hex value CD (MARC 21)
+CEx,206d,{CE},*hex value CE (MARC 21)
+CFx,207d,{CF},*hex value CF (MARC 21)
+D0x,208d,{D0},*hex value D0 (MARC 21)
+D1x,209d,{D1},*hex value D1 (MARC 21)
+D2x,210d,{D2},*hex value D2 (MARC 21)
+D3x,211d,{D3},*hex value D3 (MARC 21)
+D4x,212d,{D4},*hex value D4 (MARC 21)
+D5x,213d,{D5},*hex value D5 (MARC 21)
+D6x,214d,{D6},*hex value D6 (MARC 21)
+D7x,215d,{D7},*hex value D7 (MARC 21)
+D8x,216d,{D8},*hex value D8 (MARC 21)
+D9x,217d,{D9},*hex value D9 (MARC 21)
+DAx,218d,{DA},*hex value DA (MARC 21)
+DBx,219d,{DB},*hex value DB (MARC 21)
+DCx,220d,{DC},*hex value DC (MARC 21)
+DDx,221d,{DD},*hex value DD (MARC 21)
+DEx,222d,{DE},*hex value DE (MARC 21)
+DFx,223d,{DF},*hex value DF (MARC 21)
+E0x,224d,{hooka},*combining hook above (MARC 21)
+E1x,225d,{grave},*combining grave (MARC 21)
+E2x,226d,{acute},*combining acute (MARC 21)
+E3x,227d,{circ},*combining circumflex (MARC 21)
+E4x,228d,{tilde},*combining tilde (MARC 21)
+E5x,229d,{macr},*combining macron (MARC 21)
+E6x,230d,{breve},*combining breve (MARC 21)
+E7x,231d,{dot},*combining dot above (MARC 21)
+E8x,232d,{diaer},*combining diaeresis (MARC 21)
+E8x,232d,{uml},*combining umlaut (MARC 21)
+E9x,233d,{caron},*combining hacek (MARC 21)
+EAx,234d,{ring},*combining ring above (MARC 21)
+EBx,235d,{llig},*combining ligature left half (MARC 21)
+ECx,236d,{rlig},*combining ligature right half (MARC 21)
+EDx,237d,{rcommaa},*combining comma above right (MARC 21)
+EEx,238d,{dblac},*combining double acute (MARC 21)
+EFx,239d,{candra},*combining candrabindu (MARC 21)
+F0x,240d,{cedil},*combining cedilla (MARC 21)
+F1x,241d,{ogon},*combining ogonek (MARC 21)
+F2x,242d,{dotb},*combining dot below (MARC 21)
+F3x,243d,{dbldotb},*combining double dot below (MARC 21)
+F4x,244d,{ringb},*combining ring below (MARC 21)
+F5x,245d,{dblunder},*combining double underscore (MARC 21)
+F6x,246d,{under},*combining underscore (MARC 21)
+F7x,247d,{commab},*combining comma below (MARC 21)
+F8x,248d,{rcedil},*combining right cedilla (MARC 21)
+F9x,249d,{breveb},*combining breve below (MARC 21)
+FAx,250d,{ldbltil},*combining double tilde left half (MARC 21)
+FBx,251d,{rdbltil},*combining double tilde right half (MARC 21)
+FCx,252d,{FC},*hex value FC (MARC 21)
+FDx,253d,{FD},*hex value FD (MARC 21)
+FEx,254d,{commaa},*combining comma above (MARC 21)
+FFx,255d,{FF},*hex value FF (MARC 21)

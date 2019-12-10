@@ -24,9 +24,8 @@ import javax.xml.transform.dom.DOMResult
 internal class MarcXmlWriterTest {
     @Test
     fun `test with BibliographicRecord`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
+            reader.next()
         }
 
         val expected = File(javaClass.getResource("/records/MARCXML_bib_record.xml").toURI())
@@ -42,9 +41,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test using converter`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_many_diacritics.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_many_diacritics.mrc")).use { reader ->
+            reader.next()
         }
 
         ByteArrayOutputStream().use { outputStream ->
@@ -70,9 +68,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test using converter and normalizeUnicode`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_many_diacritics.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_many_diacritics.mrc")).use { reader ->
+            reader.next()
         }
 
         ByteArrayOutputStream().use { outputStream ->
@@ -98,9 +95,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test writing to a Result`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
+            reader.next()
         }
 
         val result = DOMResult()
@@ -128,9 +124,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test writing to a Result with stylesheet as String`() {
-        lateinit var record: Record
-        MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use {
-            record = it.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use {
+            it.next()
         }
 
         System.setProperty("http.agent", "MARC4K")
@@ -161,9 +156,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test writing bad characters in various fields`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_bad_characters_in_various_fields.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/MARC8_bib_record_bad_characters_in_various_fields.mrc")).use { reader ->
+            reader.next()
         }
 
         ByteArrayOutputStream().use { outputStream ->
@@ -259,9 +253,8 @@ internal class MarcXmlWriterTest {
 
     @Test
     fun `test using writeSingleRecord()`() {
-        lateinit var record: MarcRecord
-        MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
-            record = reader.next()
+        val record = MarcStreamReader(javaClass.getResourceAsStream("/records/UTF8_bib_record.mrc")).use { reader ->
+            reader.next()
         }
 
         val expected = File(javaClass.getResource("/records/MARCXML_bib_record_no_collection.xml").toURI())

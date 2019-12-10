@@ -73,13 +73,12 @@ internal class NewMarcStreamWriterTest {
             controlFields.add(ControlField("001", data))
         }
 
-        lateinit var byteArray: ByteArray
-        ByteArrayOutputStream().use { outputStream ->
+        val byteArray = ByteArrayOutputStream().use { outputStream ->
             NewMarcStreamWriter(outputStream, true, DefaultMarcDataEncoder("UTF-8")).use { writer ->
                 writer.write(record)
             }
 
-            byteArray = outputStream.toByteArray()
+            outputStream.toByteArray()
         }
 
         assertThat(byteArray.copyOfRange(0, 36)).isEqualTo("10049     0000037       001999900000".toByteArray(Charsets.ISO_8859_1))
@@ -117,13 +116,12 @@ internal class NewMarcStreamWriterTest {
             }
         }
 
-        lateinit var byteArray: ByteArray
-        ByteArrayOutputStream().use { outputStream ->
+        val byteArray = ByteArrayOutputStream().use { outputStream ->
             NewMarcStreamWriter(outputStream, true, DefaultMarcDataEncoder("UTF-8")).use { writer ->
                 writer.write(record)
             }
 
-            byteArray = outputStream.toByteArray()
+            outputStream.toByteArray()
         }
 
         assertThat(byteArray.copyOfRange(0, 36)).isEqualTo("99999     0001237       001101100000".toByteArray(Charsets.ISO_8859_1))
@@ -136,28 +134,28 @@ internal class NewMarcStreamWriterTest {
     }
 
     private fun getByteArrayFromRecordWithEncoding(record: MarcRecord, encoding: String): ByteArray {
-        ByteArrayOutputStream().use { outputStream ->
+        return ByteArrayOutputStream().use { outputStream ->
             NewMarcStreamWriter(outputStream, encoder = DefaultMarcDataEncoder(encoding)).use { writer ->
                 writer.write(record)
             }
 
-            return outputStream.toByteArray()
+            outputStream.toByteArray()
         }
     }
 
     private fun getRecordFromMarc8Stream(inputStream: InputStream): MarcRecord {
-        NewMarcStreamReader(inputStream, Marc21DataDecoder(Marc8ToUnicode(true))).use { reader ->
-            return reader.next()
+        return NewMarcStreamReader(inputStream, Marc21DataDecoder(Marc8ToUnicode(true))).use { reader ->
+            reader.next()
         }
     }
 
     private fun getByteArrayFromRecordAsMarc8(record: MarcRecord): ByteArray {
-        ByteArrayOutputStream().use { outputStream ->
+        return ByteArrayOutputStream().use { outputStream ->
             NewMarcStreamWriter(outputStream, encoder = Marc21DataEncoder()).use { writer ->
                 writer.write(record)
             }
 
-            return outputStream.toByteArray()
+            outputStream.toByteArray()
         }
     }
 

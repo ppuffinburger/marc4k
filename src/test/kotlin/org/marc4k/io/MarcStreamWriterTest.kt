@@ -70,13 +70,12 @@ internal class MarcStreamWriterTest {
             controlFields.add(ControlField("001", data))
         }
 
-        lateinit var byteArray: ByteArray
-        ByteArrayOutputStream().use { outputStream ->
+        val byteArray =  ByteArrayOutputStream().use { outputStream ->
             MarcStreamWriter(outputStream, "UTF-8", true).use { writer ->
                 writer.write(record)
             }
 
-            byteArray = outputStream.toByteArray()
+            outputStream.toByteArray()
         }
 
         assertThat(byteArray.copyOfRange(0, 36)).isEqualTo("10049     0000037       001999900000".toByteArray(Charsets.ISO_8859_1))
@@ -114,13 +113,12 @@ internal class MarcStreamWriterTest {
             }
         }
 
-        lateinit var byteArray: ByteArray
-        ByteArrayOutputStream().use { outputStream ->
+        val byteArray = ByteArrayOutputStream().use { outputStream ->
             MarcStreamWriter(outputStream, "UTF-8", true).use { writer ->
                 writer.write(record)
             }
 
-            byteArray = outputStream.toByteArray()
+            outputStream.toByteArray()
         }
 
         assertThat(byteArray.copyOfRange(0, 36)).isEqualTo("99999     0001237       001101100000".toByteArray(Charsets.ISO_8859_1))
