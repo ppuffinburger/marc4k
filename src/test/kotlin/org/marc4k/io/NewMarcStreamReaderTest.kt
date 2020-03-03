@@ -3,9 +3,9 @@ package org.marc4k.io
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
-import org.marc4k.converter.marc8.Marc8ToUnicode
 import org.marc4k.io.codec.DefaultMarcDataDecoder
 import org.marc4k.io.codec.Marc21DataDecoder
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
 
 internal class NewMarcStreamReaderTest {
     @Test

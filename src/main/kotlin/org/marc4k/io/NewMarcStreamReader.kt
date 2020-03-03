@@ -3,13 +3,22 @@ package org.marc4k.io
 import org.marc4k.*
 import org.marc4k.io.codec.*
 import org.marc4k.marc.MarcRecord
-import org.marc4k.marc.Record
 import java.io.*
-import java.util.function.Consumer
 
+/**
+ * A [MarcReader] that takes an [InputStream] and uses a [MarcDataDecoder] to handle character conversions.
+ *
+ * @property[input] an [InputStream] containing MARC records.
+ * @property[decoder] the [MarcDataDecoder] used to transform the character data.  Default is a [DefaultMarcDataDecoder].
+ */
 class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecoder = DefaultMarcDataDecoder()) : MarcReader {
-    private val input: DataInputStream = DataInputStream(if (input.markSupported()) input else BufferedInputStream(input))
+    private val input = DataInputStream(if (input.markSupported()) input else BufferedInputStream(input))
 
+    /**
+     * Returns true if there could be another record.
+     *
+     * @throws[MarcException] if an [IOException] occurs.
+     */
     override fun hasNext(): Boolean {
         try {
             input.mark(10)
@@ -24,6 +33,11 @@ class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecod
         return true
     }
 
+    /**
+     * Returns the next [MarcRecord].
+     *
+     * @throws[MarcException] if an [IOException] or [EOFException] occurs.
+     */
     override fun next(): MarcRecord {
         try {
             input.mark(LEADER_RECORD_LENGTH_LENGTH)
@@ -42,10 +56,9 @@ class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecod
         }
     }
 
-    override fun forEachRemaining(action: Consumer<in Record>) {
-        while (hasNext()) action.accept(next())
-    }
-
+    /**
+     * Closes the underlying [InputStream].
+     */
     override fun close() {
         input.close()
     }

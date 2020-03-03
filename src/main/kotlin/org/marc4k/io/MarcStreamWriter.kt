@@ -1,8 +1,8 @@
 package org.marc4k.io
 
 import org.marc4k.*
-import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.CharacterConverterResult
+import org.marc4k.io.converter.CharacterConverter
+import org.marc4k.io.converter.CharacterConverterResult
 import org.marc4k.marc.CustomDecimalFormat
 import org.marc4k.marc.MarcRecord
 import org.marc4k.marc.Record

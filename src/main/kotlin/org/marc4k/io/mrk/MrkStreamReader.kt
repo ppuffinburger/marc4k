@@ -1,9 +1,9 @@
 package org.marc4k.io.mrk
 
 import org.marc4k.MarcException
-import org.marc4k.converter.CharacterConverterResult
-import org.marc4k.converter.marc8.Marc8ToUnicode
 import org.marc4k.io.MarcReader
+import org.marc4k.io.converter.CharacterConverterResult
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
 import org.marc4k.marc.ControlField
 import org.marc4k.marc.DataField
 import org.marc4k.marc.MarcRecord
@@ -15,10 +15,18 @@ import java.text.Normalizer
 import java.util.*
 import java.util.regex.Pattern
 
+/**
+ * A [MarcReader] that takes an [InputStream] and read records in the MARC text format.
+ *
+ * @param[input] an [InputStream] containing MARC records.
+ */
 class MrkStreamReader(input: InputStream) : MarcReader {
     private val input = Scanner(BufferedInputStream(input), StandardCharsets.UTF_8.name()).apply { useDelimiter(delimiterPattern) }
     private val converter: Marc8ToUnicode by lazy { Marc8ToUnicode() }
 
+    /**
+     * Returns true if there could be another record.
+     */
     override fun hasNext(): Boolean {
         while (input.hasNextLine()) {
             if (input.hasNext(leaderPattern)) {
@@ -29,6 +37,11 @@ class MrkStreamReader(input: InputStream) : MarcReader {
         return false
     }
 
+    /**
+     * Returns the next [MarcRecord].
+     *
+     * @throws[MarcException] if there are invalid indicators or character conversion fails.
+     */
     override fun next(): MarcRecord {
         var hasHighBitCharacters = false
 
@@ -55,6 +68,9 @@ class MrkStreamReader(input: InputStream) : MarcReader {
         return parse(lines, hasHighBitCharacters)
     }
 
+    /**
+     * Closes the underlying [InputStream].
+     */
     override fun close() {
         input.close()
     }

@@ -32,7 +32,7 @@ internal class CustomDecimalFormat(numberOfDigits: Int, private val overflowRepr
     }
 }
 
-enum class OverflowRepresentation {
+internal enum class OverflowRepresentation {
     ALL_ZEROS,
     ALL_NINES,
     TRUNCATE

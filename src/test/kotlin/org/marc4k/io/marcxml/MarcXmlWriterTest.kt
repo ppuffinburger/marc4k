@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertAll
-import org.marc4k.converter.marc8.Marc8ToUnicode
 import org.marc4k.io.MarcStreamReader
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
 import org.marc4k.marc.Leader
 import org.marc4k.marc.MarcRecord
 import org.marc4k.marc.Record

@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.marc4k.MarcException
-import org.marc4k.converter.marc8.Marc8ToUnicode
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
 import java.nio.charset.Charset
 
 internal class DefaultMarcDataDecoderTest {

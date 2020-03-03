@@ -1,6 +1,6 @@
 package org.marc4k
 
-import org.marc4k.converter.ConversionError
+import org.marc4k.io.converter.ConversionError
 
 sealed class MarcError {
     data class EncodingError(val fieldIndex: Int, val tag: String, val errors: List<ConversionError>) : MarcError() {

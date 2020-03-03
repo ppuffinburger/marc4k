@@ -3,11 +3,15 @@ package org.marc4k.io.mrk
 import java.util.regex.Pattern
 
 object MrkTransliterator {
-    @Suppress("RegExpRedundantEscape")
-    private val mnemonicPattern = Pattern.compile("\\{([A-Za-z0-9]{2,8}?)\\}")
+    private val mnemonicPattern = Pattern.compile("""\{([A-Za-z0-9]{2,8}?)}""")
     private val textToMarc: Map<String, String> by lazy { buildTextToMarcMap() }
     private val marcToText: Map<Char, String> by lazy { buildMarcToTextMap() }
 
+    /**
+     * Converts the given MARC text [input] with the mnemonics replaced with actual values and returns.
+     *
+     * If a mnemonic cannot be found it will be converted to an NCR.
+     */
     fun fromMrk(input: String): String {
         with(StringBuilder()) {
             var last = 0
@@ -24,6 +28,11 @@ object MrkTransliterator {
         }
     }
 
+    /**
+     * Converts the given [input] using MARC text mnemonics and returns.
+     *
+     * @property[toUtf8] true if converting to UTF8 which will only translated $, {, and } to mnemonics.  Defaults to true.
+     */
     fun toMrk(input: String, toUtf8: Boolean = true): String {
         if (toUtf8) {
             return with(StringBuilder()) {

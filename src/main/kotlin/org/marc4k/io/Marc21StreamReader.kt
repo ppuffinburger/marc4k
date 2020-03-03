@@ -9,6 +9,12 @@ import org.marc4k.marc.marc21.classification.ClassificationRecord
 import org.marc4k.marc.marc21.community.CommunityRecord
 import org.marc4k.marc.marc21.holdings.HoldingsRecord
 
+/**
+ * A [MarcReader] that delegates to another reader and returns instances of MARC21 record classes
+ * based on the TypeOfRecord in the Leader.
+ *
+ * @property[reader] a [MarcReader] to delegate to.
+ */
 class Marc21StreamReader(private val reader: MarcReader) : MarcReader by reader {
     override fun next(): Marc21Record {
         val record = reader.next() as MarcRecord

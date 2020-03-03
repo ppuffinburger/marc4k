@@ -1,9 +1,9 @@
 package org.marc4k.io.marcxml
 
 import org.marc4k.MarcException
-import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.CharacterConverterResult
 import org.marc4k.io.MarcWriter
+import org.marc4k.io.converter.CharacterConverter
+import org.marc4k.io.converter.CharacterConverterResult
 import org.marc4k.marc.MarcRecord
 import org.marc4k.marc.Record
 import org.marc4k.marc.marc21.authority.AuthorityRecord
@@ -26,6 +26,10 @@ import javax.xml.transform.sax.TransformerHandler
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
 
+/**
+ * A [MarcWriter] for writing MARCXML that supports stylesheets for writing other XML based
+ * formats such as MODS.
+ */
 class MarcXmlWriter : MarcWriter {
     private lateinit var handler: TransformerHandler
     private var writer: Writer? = null
@@ -33,12 +37,28 @@ class MarcXmlWriter : MarcWriter {
     private var encoding = "UTF8"
     private var writeCollectionElement = true
 
+    /**
+     * true if output will compose Unicode with NFC.  Defaults to false.
+     */
     var normalizeUnicode = false
+
+    /**
+     * true if replacing characters that are not valid in XML with <U+####> format.  Defaults to false.
+     */
     var replaceNonXmlCharacters = false
+
+    /**
+     * Optional [CharacterConverter] that will be used to transform data when writing.  Defaults to null.
+     */
     var converter: CharacterConverter? = null
 
     private constructor()
 
+    /**
+     * Instantiates class with given [outputStream] and starts writing the document using the given [encoding].
+     *
+     * @property[indent] true if indentation is wanted in the document.   Defaults to false.
+     */
     constructor(outputStream: OutputStream, encoding: String = "UTF8", indent: Boolean = false) {
         this.encoding = encoding
         this.indent = indent
@@ -53,18 +73,30 @@ class MarcXmlWriter : MarcWriter {
         }
     }
 
+    /**
+     * Instantiates class with given [result] and starts writing the document.
+     */
     constructor(result: Result) {
         handler = createHandler(result, null)
         writeStartDocument()
     }
 
+    /**
+     * Instantiates class with given [result] and [styleSheet] and starts writing the document.
+     */
     constructor(result: Result, styleSheet: String) : this(result = result, styleSheet = StreamSource(styleSheet))
 
+    /**
+     * Instantiates class with given [result] and [styleSheet] and starts writing the document.
+     */
     constructor(result: Result, styleSheet: Source) {
         handler = createHandler(result, styleSheet)
         writeStartDocument()
     }
 
+    /**
+     * Writes [record] to underlying [handler].
+     */
     override fun write(record: Record) {
         try {
             createXml(record)
@@ -73,6 +105,9 @@ class MarcXmlWriter : MarcWriter {
         }
     }
 
+    /**
+     * Writes the end of document and closes the underlying [writer], if used.
+     */
     override fun close() {
         writeEndDocument()
 
@@ -274,6 +309,12 @@ class MarcXmlWriter : MarcWriter {
         private val EMPTY_ATTRIBUTES = AttributesImpl()
         private val INVALID_XML_CHARACTER_PATTERN = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\x{10000}-\\x{10FFFF}]")
 
+        /**
+         * Convenience method to write a single [record] to an [outputStream].
+         *
+         * @property[indent] true if indentation is wanted in the document.   Defaults to false.
+         * @property[converter] that will be used to transform data when writing.  Defaults to null.
+         */
         fun writeSingleRecord(record: Record, outputStream: OutputStream, indent: Boolean = false, converter: CharacterConverter? = null) {
             try {
                 BufferedWriter(OutputStreamWriter(outputStream)).use { bufferedWriter ->

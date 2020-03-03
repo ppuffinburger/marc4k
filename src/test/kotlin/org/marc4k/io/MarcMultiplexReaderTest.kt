@@ -2,7 +2,7 @@ package org.marc4k.io
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.marc4k.converter.marc8.Marc8ToUnicode
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
 import org.marc4k.io.codec.DefaultMarcDataDecoder
 import java.io.FileInputStream
 

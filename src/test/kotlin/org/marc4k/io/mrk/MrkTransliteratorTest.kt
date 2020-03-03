@@ -3,9 +3,9 @@ package org.marc4k.io.mrk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
-import org.marc4k.converter.CharacterConverterResult
-import org.marc4k.converter.marc8.Marc8ToUnicode
-import org.marc4k.converter.marc8.UnicodeToMarc8
+import org.marc4k.io.converter.CharacterConverterResult
+import org.marc4k.io.converter.marc8.Marc8ToUnicode
+import org.marc4k.io.converter.marc8.UnicodeToMarc8
 
 internal class MrkTransliteratorTest {
     private val marc8ToUnicode = Marc8ToUnicode()

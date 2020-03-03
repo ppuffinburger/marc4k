@@ -10,10 +10,22 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
 
+/**
+ * A [MarcWriter] that writes a [Record] to an [OutputStream] using a [MarcDataEncoder] to handle character conversions.
+ *
+ * @property[output] the [OutputStream] to write the MARC data to.
+ * @property[allowOversizeRecord] true if allowing oversize records to be written.  Defaults to false.
+ * @property[encoder] the [MarcDataEncoder] used to transform the character data.  Defaults is a [DefaultMarcDataEncoder].
+ */
 class NewMarcStreamWriter(private val output: OutputStream, private val allowOversizeRecord: Boolean = false, private val encoder: MarcDataEncoder = DefaultMarcDataEncoder()) : MarcWriter {
     private var hasOversizeLength = false
     private var hasOversizeOffset = false
 
+    /**
+     * Writes a [Record] to the underlying [OutputStream].
+     *
+     * @throws[MarcException] if an [IOException] occurs or an oversize record occurs and is not allowed.
+     */
     override fun write(record: Record) {
         val recordToWrite = encoder.createIso2709Record(if (record is MarcRecord) record else MarcRecord().apply { copyFrom(record) })
 
@@ -79,6 +91,9 @@ class NewMarcStreamWriter(private val output: OutputStream, private val allowOve
         }
     }
 
+    /**
+     * Closes the underlying [OutputStream].
+     */
     override fun close() {
         output.close()
     }

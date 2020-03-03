@@ -4,12 +4,18 @@ import org.marc4k.ISO_8859_1
 import org.marc4k.MarcError
 import org.marc4k.MarcException
 import org.marc4k.UTF_8
-import org.marc4k.converter.CharacterConverter
-import org.marc4k.converter.CharacterConverterResult
+import org.marc4k.io.converter.CharacterConverter
+import org.marc4k.io.converter.CharacterConverterResult
 import org.marc4k.marc.MarcRecord
 import java.nio.charset.Charset
 import java.nio.charset.UnsupportedCharsetException
 
+/**
+ * Data decoder for MARC records.  This mostly simulates what MARC4J does.
+ *
+ * This decoder will selectively decode data in a MARC record based on the given [encoding] unless
+ * a [converter] is supplied.
+ */
 class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcDataDecoder() {
     init {
         encoding = parseEncoding(encoding)
@@ -54,6 +60,12 @@ class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private 
     }
 }
 
+/**
+ * Data encoder for MARC records.  This mostly simulates what MARC4J does.
+ *
+ * This encoder will selectively encode data in a MARC record based on the given [encoding] unless
+ * a [converter] is supplied.
+ */
 class DefaultMarcDataEncoder(private var encoding: String = ISO_8859_1, private val converter: CharacterConverter? = null) : MarcDataEncoder() {
     init {
         encoding = parseEncoding(encoding)
