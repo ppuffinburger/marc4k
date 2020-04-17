@@ -83,7 +83,7 @@ enum class RecordStatus(val value: Char) {
 enum class TypeOfRecord(val value: Char) {
     LANGUAGE_MATERIAL('a'),
     NOTATED_MUSIC('c'),
-    MANUSCRIPT_NOTED_MUSIC('d'),
+    MANUSCRIPT_NOTATED_MUSIC('d'),
     CARTOGRAPHIC_MATERIAL('e'),
     MANUSCRIPT_CARTOGRAPHIC_MATERIAL('f'),
     PROJECTED_MEDIUM('g'),

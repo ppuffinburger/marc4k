@@ -1,8 +1,7 @@
 package org.marc4k.marc
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
 import java.time.LocalDateTime
 
 internal class MarcRecordDslTest {
@@ -52,11 +51,11 @@ internal class MarcRecordDslTest {
             }
         }
 
-        assertAll(
-            { assertThat(given.leader.toString()).isEqualTo("LEADER 00123nam a22003217a 4500") },
-            { assertThat(given.getControlNumber()).isEqualTo("control_number") },
-            { assertThat(given.getDateOfLatestTransaction()).isEqualTo(LocalDateTime.of(2020, 3, 6, 12, 34, 56)) },
-            { assertThat(given.dataFields.first { it.tag == "100" }.toString()).isEqualTo("100  1 ‡aShakespeare, William,‡d1564-1616") }
-        )
+        SoftAssertions().apply {
+            assertThat(given.leader.toString()).isEqualTo("LEADER 00123nam a22003217a 4500")
+            assertThat(given.getControlNumber()).isEqualTo("control_number")
+            assertThat(given.getDateOfLatestTransaction()).isEqualTo(LocalDateTime.of(2020, 3, 6, 12, 34, 56))
+            assertThat(given.dataFields.first { it.tag == "100" }.toString()).isEqualTo("100  1 ‡aShakespeare, William,‡d1564-1616")
+        }.assertAll()
     }
 }

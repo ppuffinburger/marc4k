@@ -117,7 +117,7 @@ internal class BibliographicRecordTest {
         "MANUSCRIPT_LANGUAGE_MATERIAL, INVALID, false",
         "COMPUTER_FILE, INVALID, true",
         "NOTATED_MUSIC, INVALID, true",
-        "MANUSCRIPT_NOTED_MUSIC, INVALID, true",
+        "MANUSCRIPT_NOTATED_MUSIC, INVALID, true",
         "PROJECTED_MEDIUM, INVALID, true",
         "NON_MUSICAL_SOUND_RECORDING, INVALID, true",
         "MUSICAL_SOUND_RECORDING, INVALID, true",

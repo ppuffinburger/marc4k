@@ -27,7 +27,7 @@ class BibliographicRecord : Marc21Record() {
                 }
                 TypeOfRecord.COMPUTER_FILE,
                 TypeOfRecord.NOTATED_MUSIC,
-                TypeOfRecord.MANUSCRIPT_NOTED_MUSIC,
+                TypeOfRecord.MANUSCRIPT_NOTATED_MUSIC,
                 TypeOfRecord.PROJECTED_MEDIUM,
                 TypeOfRecord.NON_MUSICAL_SOUND_RECORDING,
                 TypeOfRecord.MUSICAL_SOUND_RECORDING,

@@ -9,7 +9,7 @@ internal class TypeOfRecordTest {
     fun `test fromValue()`() {
         assertThat(TypeOfRecord.fromValue('a')).isEqualTo(TypeOfRecord.LANGUAGE_MATERIAL)
         assertThat(TypeOfRecord.fromValue('c')).isEqualTo(TypeOfRecord.NOTATED_MUSIC)
-        assertThat(TypeOfRecord.fromValue('d')).isEqualTo(TypeOfRecord.MANUSCRIPT_NOTED_MUSIC)
+        assertThat(TypeOfRecord.fromValue('d')).isEqualTo(TypeOfRecord.MANUSCRIPT_NOTATED_MUSIC)
         assertThat(TypeOfRecord.fromValue('e')).isEqualTo(TypeOfRecord.CARTOGRAPHIC_MATERIAL)
         assertThat(TypeOfRecord.fromValue('f')).isEqualTo(TypeOfRecord.MANUSCRIPT_CARTOGRAPHIC_MATERIAL)
         assertThat(TypeOfRecord.fromValue('g')).isEqualTo(TypeOfRecord.PROJECTED_MEDIUM)
