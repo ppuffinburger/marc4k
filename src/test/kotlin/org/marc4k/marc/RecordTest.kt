@@ -65,8 +65,7 @@ internal class RecordTest {
             )
         }
 
-        val lineSep = System.lineSeparator()
-        val expected = "LEADER 12345nam a2254321 a 4500${lineSep}001    control_number${lineSep}100    \u2021asubfield_a$lineSep"
+        val expected = "LEADER 12345nam a2254321 a 4500\n001    control_number\n100    \u2021asubfield_a\n"
 
         assertThat(given.toString()).isEqualTo(expected)
     }
