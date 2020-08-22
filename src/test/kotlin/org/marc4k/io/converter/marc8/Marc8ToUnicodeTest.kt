@@ -12,7 +12,7 @@ internal class Marc8ToUnicodeTest {
 
     @Test
     fun `test outputsUnicode()`() {
-        assertThat(marc8ToUnicode.outputsUnicode()).isTrue()
+        assertThat(marc8ToUnicode.outputsUnicode()).isTrue
     }
 
     @Test
@@ -343,6 +343,17 @@ internal class Marc8ToUnicodeTest {
         assertAll(
             { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
             { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("&#x00BC;&#x00BD;&#x00BE;") }
+        )
+    }
+
+    @Test
+    fun `test vulgar fractions do not break other languages`() {
+        // Some vulgar fractions seem to be routinely encoded wrong in MARC8 records.   They are encoded as MARC8 using their Unicode
+        // values instead of translated to an NCR, which conflict with some extended latin and arabic MARC8 codes.
+        val given = marc8ToUnicode.convert("\u001B\u0029\u0034\u00BC\u00BD\u00BE".toCharArray())
+        assertAll(
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("ڐڑڒ") }
         )
     }
 }

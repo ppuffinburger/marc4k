@@ -26,9 +26,9 @@ abstract class Record {
 
     override fun toString(): String {
         with(StringBuilder()) {
-            appendln(leader)
-            controlFields.forEach { appendln(it.toString()) }
-            dataFields.forEach { appendln(it.toString()) }
+            appendLine(leader)
+            controlFields.forEach { appendLine(it.toString()) }
+            dataFields.forEach { appendLine(it.toString()) }
             return toString()
         }
     }

@@ -15,7 +15,7 @@ internal class UnicodeToMarc8Test {
 
     @Test
     fun `test outputsUnicode()`() {
-        assertThat(unicodeToMarc8.outputsUnicode()).isFalse()
+        assertThat(unicodeToMarc8.outputsUnicode()).isFalse
     }
 
     @Test

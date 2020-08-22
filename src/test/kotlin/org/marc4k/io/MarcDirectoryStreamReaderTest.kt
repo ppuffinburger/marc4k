@@ -52,7 +52,7 @@ internal class MarcDirectoryStreamReaderTest {
         File("src/test/resources/records/walktest/utf8/UTF8_auth_record.mrc").copyTo(File("${tempDirectory.canonicalPath}/UTF8_auth_record.mrc")).apply { deleteOnExit() }
 
         MarcDirectoryStreamReader(tempDirectory, Marc21DataDecoder()).use { reader ->
-            assertThat(marc8File.delete()).isTrue()
+            assertThat(marc8File.delete()).isTrue
             var count = 0
             for ((index, record) in reader.withIndex()) {
                 when (index) {

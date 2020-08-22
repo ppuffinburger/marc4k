@@ -144,14 +144,14 @@ internal class BibliographicRecordTest {
     @Test
     fun `test isRda() with DescriptiveCatalogingForm not ISBD_PUNCTUATION_INCLUDED`() {
         val given = BibliographicRecord()
-        assertThat(given.isRda()).isFalse()
+        assertThat(given.isRda()).isFalse
     }
 
     @Test
     fun `test isRda() with no 040`() {
         val given = BibliographicRecord()
             .apply { leader.descriptiveCatalogingForm = DescriptiveCatalogingForm.ISBD_PUNCTUATION_INCLUDED }
-        assertThat(given.isRda()).isFalse()
+        assertThat(given.isRda()).isFalse
     }
 
     @Test
@@ -163,7 +163,7 @@ internal class BibliographicRecordTest {
                 subfields = mutableListOf(Subfield('a', "subfield_a"))
             )
         }
-        assertThat(given.isRda()).isFalse()
+        assertThat(given.isRda()).isFalse
     }
 
     @Test
@@ -178,7 +178,7 @@ internal class BibliographicRecordTest {
                 )
             )
         }
-        assertThat(given.isRda()).isFalse()
+        assertThat(given.isRda()).isFalse
     }
 
     @Test
@@ -194,6 +194,6 @@ internal class BibliographicRecordTest {
                 )
             )
         }
-        assertThat(given.isRda()).isTrue()
+        assertThat(given.isRda()).isTrue
     }
 }

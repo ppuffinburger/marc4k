@@ -25,23 +25,23 @@ internal class CodeDataTrackerTest {
 
     @Test
     fun `test isEACC()`() {
-        assertThat(CodeDataTracker("data".toCharArray()).isEACC()).isFalse()
-        assertThat(CodeDataTracker("data".toCharArray(), g0 = 0x31).isEACC()).isTrue()
-        assertThat(CodeDataTracker("data".toCharArray(), g1 = 0x31).isEACC()).isTrue()
+        assertThat(CodeDataTracker("data".toCharArray()).isEACC()).isFalse
+        assertThat(CodeDataTracker("data".toCharArray(), g0 = 0x31).isEACC()).isTrue
+        assertThat(CodeDataTracker("data".toCharArray(), g1 = 0x31).isEACC()).isTrue
     }
 
     @Test
     fun `test isEmpty()`() {
         val tracker = CodeDataTracker("data".toCharArray())
-        assertThat(tracker.isEmpty()).isFalse()
+        assertThat(tracker.isEmpty()).isFalse
         assertThat(tracker.pop()).isEqualTo('d')
-        assertThat(tracker.isEmpty()).isFalse()
+        assertThat(tracker.isEmpty()).isFalse
         assertThat(tracker.pop()).isEqualTo('a')
-        assertThat(tracker.isEmpty()).isFalse()
+        assertThat(tracker.isEmpty()).isFalse
         assertThat(tracker.pop()).isEqualTo('t')
-        assertThat(tracker.isEmpty()).isFalse()
+        assertThat(tracker.isEmpty()).isFalse
         assertThat(tracker.pop()).isEqualTo('a')
-        assertThat(tracker.isEmpty()).isTrue()
+        assertThat(tracker.isEmpty()).isTrue
     }
 
     @Test

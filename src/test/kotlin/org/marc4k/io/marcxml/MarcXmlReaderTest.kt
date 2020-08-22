@@ -19,7 +19,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(12) },
                 { assertThat(record.errors).isEmpty() }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -35,7 +35,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(12) },
                 { assertThat(record.errors.size).isEqualTo(2) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -51,7 +51,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(12) },
                 { assertThat(record.errors.size).isEqualTo(2) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -67,7 +67,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(12) },
                 { assertThat(record.errors.size).isEqualTo(1) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -84,7 +84,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(14) },
                 { assertThat(record.errors.size).isEqualTo(1) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -101,7 +101,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(14) },
                 { assertThat(record.errors.size).isEqualTo(1) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -118,7 +118,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(14) },
                 { assertThat(record.errors.size).isEqualTo(1) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -135,7 +135,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(13) },
                 { assertThat(record.errors.size).isEqualTo(1) }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -175,7 +175,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(17) },
                 { assertThat(record.errors).isEmpty() }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -195,7 +195,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(17) },
                 { assertThat(record.errors).isEmpty() }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 
@@ -216,7 +216,7 @@ internal class MarcXmlReaderTest {
                 { assertThat(record.dataFields.size).isEqualTo(17) },
                 { assertThat(record.errors).isEmpty() }
             )
-            assertThat(reader.hasNext()).isFalse()
+            assertThat(reader.hasNext()).isFalse
         }
     }
 }

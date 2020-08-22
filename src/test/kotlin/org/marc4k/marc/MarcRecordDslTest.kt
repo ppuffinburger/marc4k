@@ -21,7 +21,6 @@ internal class MarcRecordDslTest {
                 entryMap[1] = '5'
                 entryMap[2] = '0'
                 entryMap[3] = '0'
-
             }
             controlFields {
                 controlField {

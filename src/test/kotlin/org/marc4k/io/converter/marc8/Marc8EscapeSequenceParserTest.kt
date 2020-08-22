@@ -9,7 +9,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with no escape sequence`() {
         val tracker = CodeDataTracker("".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -18,7 +18,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with only escape`() {
         val tracker = CodeDataTracker("\u001B".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -27,7 +27,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with no escape sequence and data`() {
         val tracker = CodeDataTracker("data".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -36,7 +36,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with invalid designator`() {
         val tracker = CodeDataTracker("\u001B\u002Fdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -53,7 +53,7 @@ internal class Marc8EscapeSequenceParserTest {
     fun `test parse(Tracker) with Technique 1 data`() = testTechnique1Data.map { (characterSet, data, isoCode) ->
         DynamicTest.dynamicTest(characterSet) {
             val tracker = CodeDataTracker(data.toCharArray())
-            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue()
+            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue
             assertThat(tracker.offset).isEqualTo(2)
             assertThat(tracker.g0).isEqualTo(isoCode)
             assertThat(tracker.g1).isEqualTo(0x45)
@@ -63,7 +63,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G0 with invalid character set`() {
         val tracker = CodeDataTracker("\u001B(Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -72,7 +72,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G0 alt with invalid character set`() {
         val tracker = CodeDataTracker("\u001B,Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -81,7 +81,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G0 (Extended Latin) with invalid character set`() {
         val tracker = CodeDataTracker("\u001B(!Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -90,7 +90,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G0 alt (Extended Latin) with invalid character set`() {
         val tracker = CodeDataTracker("\u001B,!Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -122,7 +122,7 @@ internal class Marc8EscapeSequenceParserTest {
         DynamicTest.dynamicTest(characterSet) {
             val tracker =
                 CodeDataTracker("\u001B$intermediate${isoCode.toChar()}".toCharArray())
-            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue()
+            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue
             assertThat(tracker.offset).isEqualTo(2 + intermediate.length)
             assertThat(tracker.g0).isEqualTo(isoCode)
             assertThat(tracker.g1).isEqualTo(0x45)
@@ -132,7 +132,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G1 with invalid character set`() {
         val tracker = CodeDataTracker("\u001B\$Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -141,7 +141,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G1 alt with invalid character set`() {
         val tracker = CodeDataTracker("\u001B-Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -150,7 +150,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G1 (Extended Latin) with invalid character set`() {
         val tracker = CodeDataTracker("\u001B\$!Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -159,7 +159,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 single byte G1 alt (Extended Latin) with invalid character set`() {
         val tracker = CodeDataTracker("\u001B-!Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -191,7 +191,7 @@ internal class Marc8EscapeSequenceParserTest {
         DynamicTest.dynamicTest(characterSet) {
             val tracker =
                 CodeDataTracker("\u001B$intermediate${isoCode.toChar()}".toCharArray())
-            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue()
+            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue
             assertThat(tracker.offset).isEqualTo(2 + intermediate.length)
             assertThat(tracker.g0).isEqualTo(0x42)
             assertThat(tracker.g1).isEqualTo(isoCode)
@@ -201,7 +201,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 multi byte G0 with invalid character set`() {
         val tracker = CodeDataTracker("\u001B\$Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -210,7 +210,7 @@ internal class Marc8EscapeSequenceParserTest {
     @Test
     fun `test parse(Tracker) with Technique 2 multi byte G1 with invalid character set`() {
         val tracker = CodeDataTracker("\u001B\$-Xdata".toCharArray())
-        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse()
+        assertThat(Marc8EscapeSequenceParser().parse(tracker)).isFalse
         assertThat(tracker.offset).isEqualTo(0)
         assertThat(tracker.g0).isEqualTo(0x42)
         assertThat(tracker.g1).isEqualTo(0x45)
@@ -228,7 +228,7 @@ internal class Marc8EscapeSequenceParserTest {
         val display = "Using intermediate : '$intermediate'"
         DynamicTest.dynamicTest(display) {
             val tracker = CodeDataTracker("\u001B${intermediate}1data".toCharArray())
-            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue()
+            assertThat(Marc8EscapeSequenceParser().parse(tracker)).isTrue
             assertThat(tracker.offset).isEqualTo(2 + intermediate.length)
             assertThat(tracker.g0).isEqualTo(if (isG0) 0x31 else 0x42)
             assertThat(tracker.g1).isEqualTo(if (isG1) 0x31 else 0x45)
