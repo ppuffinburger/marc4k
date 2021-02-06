@@ -17,6 +17,7 @@ import org.marc4k.marc.marc21.community.CommunityRecord
 import org.marc4k.marc.marc21.holdings.HoldingsRecord
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+import org.xmlunit.assertj.XmlAssert
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.xml.transform.dom.DOMResult
@@ -35,7 +36,7 @@ internal class MarcXmlWriterTest {
                 writer.write(record)
             }
 
-            assertThat(outputStream.toString("UTF-8")).isXmlEqualToContentOf(expected)
+            XmlAssert.assertThat(outputStream.toString("UTF-8")).and(expected).areIdentical()
         }
     }
 
@@ -262,7 +263,7 @@ internal class MarcXmlWriterTest {
         ByteArrayOutputStream().use { outputStream ->
             MarcXmlWriter.writeSingleRecord(record, outputStream, indent = true)
 
-            assertThat(outputStream.toString("UTF-8")).isXmlEqualToContentOf(expected)
+            XmlAssert.assertThat(outputStream.toString("UTF-8")).and(expected).areIdentical()
         }
     }
 
