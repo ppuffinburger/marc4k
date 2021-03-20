@@ -4,7 +4,7 @@
 
   <groupId>org.marc4k</groupId>
   <artifactId>marc4k</artifactId>
-  <version>0.9.2</version>
+  <version>0.9.3</version>
   <packaging>jar</packaging>
 
   <name>MARC4K</name>
@@ -46,7 +46,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <kotlin.version>1.4.30</kotlin.version>
+    <kotlin.version>1.4.31</kotlin.version>
     <kotlinx-coroutines.version>1.4.2</kotlinx-coroutines.version>
     <kotlin.code.style>official</kotlin.code.style>
     <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
