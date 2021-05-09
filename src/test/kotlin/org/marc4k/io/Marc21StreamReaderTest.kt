@@ -59,7 +59,7 @@ internal class Marc21StreamReaderTest {
 
     private fun createByteStream(typeOfRecord: Char): InputStream {
         val recordBytes = "00053n   a2200037    450001001500000\u001Econtrol_number\u001E\u001D".toByteArray()
-        recordBytes[6] = typeOfRecord.toByte()
+        recordBytes[6] = typeOfRecord.code.toByte()
         return ByteArrayInputStream(recordBytes)
     }
 }

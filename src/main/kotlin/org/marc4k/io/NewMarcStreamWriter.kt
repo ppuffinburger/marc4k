@@ -45,11 +45,11 @@ class NewMarcStreamWriter(private val output: OutputStream, private val allowOve
                     }
 
                     recordToWrite.dataFields.forEach { field ->
-                        data.write(field.indicator1.toInt())
-                        data.write(field.indicator2.toInt())
+                        data.write(field.indicator1.code)
+                        data.write(field.indicator2.code)
                         field.subfields.forEach { subfield ->
                             data.write(SUBFIELD_DELIMITER)
-                            data.write(subfield.name.toInt())
+                            data.write(subfield.name.code)
                             data.write(subfield.data)
                         }
                         data.write(FIELD_TERMINATOR)

@@ -92,7 +92,7 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
             toList()
         }
 
-        return "Hex: (${characters.joinToString(" ") { String.format(MARC8_CODE_HEX_PATTERN, it.toInt()) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
+        return "Hex: (${characters.joinToString(" ") { String.format(MARC8_CODE_HEX_PATTERN, it.code) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
     }
 
     /**

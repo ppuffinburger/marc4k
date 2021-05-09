@@ -52,7 +52,7 @@ class DefaultMarcDataDecoder(private var encoding: String = ISO_8859_1, private 
     }
 
     private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
+        return when (encoding.uppercase()) {
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
             "UTF8", "UTF-8" -> UTF_8
             else -> encoding
@@ -101,7 +101,7 @@ class DefaultMarcDataEncoder(private var encoding: String = ISO_8859_1, private 
     }
 
     private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
+        return when (encoding.uppercase()) {
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
             "UTF8", "UTF-8" -> UTF_8
             else -> encoding

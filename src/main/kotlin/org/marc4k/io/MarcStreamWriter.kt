@@ -42,8 +42,8 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
                     }
 
                     recordToWrite.dataFields.forEach { field ->
-                        data.write(field.indicator1.toInt())
-                        data.write(field.indicator2.toInt())
+                        data.write(field.indicator1.code)
+                        data.write(field.indicator2.code)
                         data.write(getDataBytes(field.getData()))
                         data.write(FIELD_TERMINATOR)
                         directory.write(getDirectoryEntry(field.tag, data.size() - previousDataLength, previousDataLength))
@@ -90,7 +90,7 @@ class MarcStreamWriter(private val output: OutputStream, private var encoding: S
     }
 
     private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
+        return when (encoding.uppercase()) {
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
             "UTF8", "UTF-8" -> UTF_8
             else -> encoding

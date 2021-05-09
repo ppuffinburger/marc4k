@@ -17,7 +17,7 @@ internal class Marc8EscapeSequenceParser {
         if (tracker.pop() == ESCAPE_CHARACTER) {
             tracker.pop()?.let { characterSet ->
                 if (characterSet in TECHNIQUE_1_CHARACTER_SETS) {
-                    tracker.g0 = if (characterSet == ASCII_DEFAULT_GRAPHIC_CHARACTER) BASIC_LATIN_GRAPHIC_ISO_CODE else characterSet.toInt()
+                    tracker.g0 = if (characterSet == ASCII_DEFAULT_GRAPHIC_CHARACTER) BASIC_LATIN_GRAPHIC_ISO_CODE else characterSet.code
                     tracker.commit()
                     return true
                 }
@@ -43,10 +43,10 @@ internal class Marc8EscapeSequenceParser {
                         if (characterSet in TECHNIQUE_2_SINGLE_BYTE_CHARACTER_SETS) {
                             when (intermediate) {
                                 SINGLE_BYTE_G0_INTERMEDIATE, SINGLE_BYTE_G0_ALTERNATE_INTERMEDIATE -> {
-                                    tracker.g0 = characterSet.toInt()
+                                    tracker.g0 = characterSet.code
                                 }
                                 SINGLE_BYTE_G1_INTERMEDIATE, SINGLE_BYTE_G1_ALTERNATE_INTERMEDIATE -> {
-                                    tracker.g1 = characterSet.toInt()
+                                    tracker.g1 = characterSet.code
                                 }
                             }
                             tracker.commit()
@@ -71,9 +71,9 @@ internal class Marc8EscapeSequenceParser {
                         tracker.pop()?.let { characterSet ->
                             if (characterSet == CJK_GRAPHIC_CHARACTER) {
                                 if (secondIntermediate in MULTI_BYTE_G1_INTERMEDIATES) {
-                                    tracker.g1 = characterSet.toInt()
+                                    tracker.g1 = characterSet.code
                                 } else {
-                                    tracker.g0 = characterSet.toInt()
+                                    tracker.g0 = characterSet.code
                                 }
                                 tracker.commit()
                                 return true

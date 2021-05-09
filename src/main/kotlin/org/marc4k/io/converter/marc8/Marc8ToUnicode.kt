@@ -25,7 +25,7 @@ class Marc8ToUnicode : CharacterConverter {
      * @property[translateNcr] true if translating NCR sequences.  Defaults to false.
      */
     constructor(loadMultiByteCodeTable: Boolean = false, translateNcr: Boolean = false) : this(
-        inputStream = if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml") else Marc8ToUnicode::class.java.getResourceAsStream("/codetablesnocjk.xml"),
+        inputStream = if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml")!! else Marc8ToUnicode::class.java.getResourceAsStream("/codetablesnocjk.xml")!!,
         translateNcr = translateNcr
     ) {
         loadedMultiByteCodeTable = loadMultiByteCodeTable
@@ -159,7 +159,7 @@ class Marc8ToUnicode : CharacterConverter {
                     }
                     else -> {
                         tracker.pop()?.let { marc8 ->
-                            getChar(marc8.toInt(), tracker).let { character ->
+                            getChar(marc8.code, tracker).let { character ->
                                 val toAppend = character ?: Marc8Fixes.replaceKnownMarc8EncodingIssues(marc8)
 
                                 if (toAppend == null) {
@@ -211,7 +211,7 @@ class Marc8ToUnicode : CharacterConverter {
         return false
     }
 
-    private fun isStartOfDiacritics(tracker: CodeDataTracker) = tracker.peek()?.let { isCombining(it.toInt(), tracker) } ?: false
+    private fun isStartOfDiacritics(tracker: CodeDataTracker) = tracker.peek()?.let { isCombining(it.code, tracker) } ?: false
 
     private fun parseDiacritics(tracker: CodeDataTracker, diacritics: ArrayDeque<Pair<MarcCode, Char>>): Boolean {
         diacritics.clear()
@@ -219,9 +219,9 @@ class Marc8ToUnicode : CharacterConverter {
         do {
             var readDiacritic = false
             tracker.peek()?.let { peekedMarc8 ->
-                if (isCombining(peekedMarc8.toInt(), tracker)) {
+                if (isCombining(peekedMarc8.code, tracker)) {
                     tracker.pop()?.let { poppedMarc8 ->
-                        val poppedMarc8Code = poppedMarc8.toInt()
+                        val poppedMarc8Code = poppedMarc8.code
                         getChar(poppedMarc8Code, tracker)?.let { character ->
                             diacritics.push(poppedMarc8Code to character)
                             readDiacritic = true
@@ -236,7 +236,7 @@ class Marc8ToUnicode : CharacterConverter {
                 val currentTracker = tracker.getTrackerWithCurrentBuffer()
                 if (escapeSequenceParser.parse(currentTracker)) {
                     currentTracker.peek()?.let { marc8 ->
-                        getChar(marc8.toInt(), currentTracker)?.let {
+                        getChar(marc8.code, currentTracker)?.let {
                             // We have diacritics and a valid character after an ESC sequence following them
                             tracker.commit()
                             return true
@@ -245,7 +245,7 @@ class Marc8ToUnicode : CharacterConverter {
                 }
             } else {
                 tracker.peek()?.let { marc8 ->
-                    getChar(marc8.toInt(), tracker)?.let {
+                    getChar(marc8.code, tracker)?.let {
                         // We have diacritics and a valid character following them
                         tracker.commit()
                         return true
@@ -270,12 +270,12 @@ class Marc8ToUnicode : CharacterConverter {
     }
 
     private fun loadMultiByte() {
-        codeTable = CodeTable(javaClass.getResourceAsStream("/codetables.xml"))
+        codeTable = CodeTable(javaClass.getResourceAsStream("/codetables.xml")!!)
         loadedMultiByteCodeTable = true
     }
 
     private fun getMultiByteCharacter(first: Char, second: Char, third: Char): Char? {
-        val marc8Code = String.format("%02X%02X%02X", first.toInt(), second.toInt(), third.toInt()).toInt(16)
+        val marc8Code = String.format("%02X%02X%02X", first.code, second.code, third.code).toInt(16)
         return codeTable.getChar(marc8Code, CJK_GRAPHIC_ISO_CODE)
     }
 

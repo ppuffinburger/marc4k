@@ -61,7 +61,7 @@ class MarcStreamReader(input: InputStream, private var encoding: String = ISO_88
     }
 
     private fun parseEncoding(encoding: String): String {
-        return when (encoding.toUpperCase()) {
+        return when (encoding.uppercase()) {
             "ISO-8859-1", "ISO8859_1", "ISO_8859_1" -> ISO_8859_1
             "UTF8", "UTF-8" -> UTF_8
             else -> encoding
@@ -153,8 +153,8 @@ class MarcStreamReader(input: InputStream, private var encoding: String = ISO_88
             if (entry.first.startsWith("00")) {
                 record.controlFields.add(ControlField(entry.first, getDataAsString(index, entry.first, recordBytes.copyOfRange(entry.third, entry.third + entry.second - 1))))
             } else {
-                val indicator1 = recordBytes[entry.third].toChar()
-                val indicator2 = recordBytes[entry.third + 1].toChar()
+                val indicator1 = Char(recordBytes[entry.third].toInt())
+                val indicator2 = Char(recordBytes[entry.third + 1].toInt())
                 try {
                     record.dataFields.add(DataField(entry.first, indicator1, indicator2).apply {
                         subfields.addAll(

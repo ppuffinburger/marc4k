@@ -132,8 +132,8 @@ class NewMarcStreamReader(input: InputStream, private val decoder: MarcDataDecod
                 if (entry.first.startsWith("00")) {
                     iso2709Record.controlFields.add(Iso2709ControlField(entry.first, recordBytes.copyOfRange(entry.third, entry.third + entry.second - 1)))
                 } else {
-                    val indicator1 = recordBytes[entry.third].toChar()
-                    val indicator2 = recordBytes[entry.third + 1].toChar()
+                    val indicator1 = Char(recordBytes[entry.third].toInt())
+                    val indicator2 = Char(recordBytes[entry.third + 1].toInt())
                     iso2709Record.dataFields.add(Iso2709DataField(entry.first, indicator1, indicator2).apply {
                         subfields.addAll(
                             parseSubfields(recordBytes.copyOfRange(entry.third + 2, entry.third + entry.second))
