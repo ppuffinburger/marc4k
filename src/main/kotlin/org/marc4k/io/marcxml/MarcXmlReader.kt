@@ -1,6 +1,8 @@
 package org.marc4k.io.marcxml
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.marc4k.MarcException
 import org.marc4k.io.MarcReader
@@ -80,10 +82,11 @@ class MarcXmlReader : MarcReader {
     }
 
     private fun startParsing(inputStream: InputStream, transformerHandler: TransformerHandler? = null) {
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 MarcXmlParser(recordQueue).parse(inputStream, transformerHandler)
             } catch (e: Exception) {
+                this.cancel("Parsing of XML document canceled because of exception", e)
                 throw MarcException(e)
             }
         }
