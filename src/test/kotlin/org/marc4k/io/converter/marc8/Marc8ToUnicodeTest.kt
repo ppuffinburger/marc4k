@@ -35,8 +35,8 @@ internal class Marc8ToUnicodeTest {
 
     @Test
     fun `test conversion of CJK without loading CJK code table using constructor(InputStream)`() {
-        val marc8ToUnicode =
-            Marc8ToUnicode(javaClass.getResourceAsStream("/codetablesnocjk.xml"))
+        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+        val marc8ToUnicode = Marc8ToUnicode(javaClass.getResourceAsStream("/codetablesnocjk.xml"))
         val given = marc8ToUnicode.convert("\u001b\u0024\u0031\u0069\u0025\u0055\u0069\u0025\u0023\u0069\u0025\u006a\u0069\u0025\u0043\u0069\u0025\u0057\u001b\u0028\u0042".toCharArray())
         assertAll(
             { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
@@ -46,6 +46,7 @@ internal class Marc8ToUnicodeTest {
 
     @Test
     fun `test conversion of CJK with loading CJK code table using constructor(InputStream)`() {
+        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         val marc8ToUnicode = Marc8ToUnicode(javaClass.getResourceAsStream("/codetables.xml"))
         val given = marc8ToUnicode.convert("\u001b\u0024\u0031\u0069\u0025\u0055\u0069\u0025\u0023\u0069\u0025\u006a\u0069\u0025\u0043\u0069\u0025\u0057\u001b\u0028\u0042".toCharArray())
         assertAll(
@@ -115,7 +116,9 @@ internal class Marc8ToUnicodeTest {
         Triple("A with Acute", "\u00E2a", "á"),
         Triple("A With Circumflex and Dot Below", "\u00E3\u00F2a", "ậ"),
         Triple("Combining Double Tilde", "\u00FAa\u00FBi", "a͠i"),
-        Triple("Combining Double Inverted Breve", "\u00EBa\u00ECi", "a͡i")
+        Triple("Combining Double Inverted Breve", "\u00EBa\u00ECi", "a͡i"),
+        Triple("Combining Double Inverted Breve with Space", "\u00EB \u00ECi", " ͡i"),
+        Triple("Combining Double Inverted Breve with Page Switching", "\u00EB\u001B\u0028\u004E\u005A\u00EC\u001B\u0028\u0042\u0073", "з͡s")
     )
 
     @TestFactory
@@ -160,8 +163,8 @@ internal class Marc8ToUnicodeTest {
     fun `test convert(CharArray) with only Combining Double Inverted Breve first half`() {
         val given = marc8ToUnicode.convert("\u00EBai ")
         assertAll(
-            { assertThat(given).isInstanceOf(CharacterConverterResult.WithErrors::class.java) },
-            { assertThat((given as CharacterConverterResult.WithErrors).conversion).isEqualTo("ai ") }
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("a͡i ") }
         )
     }
 
@@ -169,8 +172,8 @@ internal class Marc8ToUnicodeTest {
     fun `test convert(CharArray) with only Combining Double Inverted Breve second half`() {
         val given = marc8ToUnicode.convert("a\u00ECi ")
         assertAll(
-            { assertThat(given).isInstanceOf(CharacterConverterResult.WithErrors::class.java) },
-            { assertThat((given as CharacterConverterResult.WithErrors).conversion).isEqualTo("ai ") }
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("ai ") }
         )
     }
 
@@ -178,8 +181,8 @@ internal class Marc8ToUnicodeTest {
     fun `test convert(CharArray) with only Combining Double Tilde first half`() {
         val given = marc8ToUnicode.convert("\u00FAai ")
         assertAll(
-            { assertThat(given).isInstanceOf(CharacterConverterResult.WithErrors::class.java) },
-            { assertThat((given as CharacterConverterResult.WithErrors).conversion).isEqualTo("ai ") }
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("a͠i ") }
         )
     }
 
@@ -187,8 +190,8 @@ internal class Marc8ToUnicodeTest {
     fun `test convert(CharArray) with only Combining Double Tilde second half`() {
         val given = marc8ToUnicode.convert("a\u00FBi ")
         assertAll(
-            { assertThat(given).isInstanceOf(CharacterConverterResult.WithErrors::class.java) },
-            { assertThat((given as CharacterConverterResult.WithErrors).conversion).isEqualTo("ai ") }
+            { assertThat(given).isInstanceOf(CharacterConverterResult.Success::class.java) },
+            { assertThat((given as CharacterConverterResult.Success).conversion).isEqualTo("ai ") }
         )
     }
 

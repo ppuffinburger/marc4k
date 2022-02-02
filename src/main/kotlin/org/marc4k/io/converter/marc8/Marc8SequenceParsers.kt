@@ -1,7 +1,5 @@
 package org.marc4k.io.converter.marc8
 
-import org.marc4k.COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER
-import org.marc4k.COMBINING_DOUBLE_TILDE_CHARACTER
 import org.marc4k.ESCAPE_CHARACTER
 
 /**
@@ -27,7 +25,8 @@ internal class Marc8EscapeSequenceParser {
         return false
     }
 
-    private fun parseTechnique2EscapeSequence(tracker: CodeDataTracker) = parseTechnique2SingleByteEscapeSequence(tracker) || parseTechnique2MultiByteEscapeSequence(tracker)
+    private fun parseTechnique2EscapeSequence(tracker: CodeDataTracker) =
+        parseTechnique2SingleByteEscapeSequence(tracker) || parseTechnique2MultiByteEscapeSequence(tracker)
 
     private fun parseTechnique2SingleByteEscapeSequence(tracker: CodeDataTracker): Boolean {
         if (tracker.pop() == ESCAPE_CHARACTER) {
@@ -124,71 +123,4 @@ internal class Marc8EscapeSequenceParser {
             MULTI_BYTE_G1_ALTERNATE_SECOND_INTERMEDIATE
         )
     }
-}
-
-/**
- * A class that parses the MARC8 Combining Double Inverted Breve sequence
- */
-internal class CombiningDoubleInvertedBreveParser {
-    /**
-     * Parses the current escape sequence in the given [tracker] and returns a [CombiningParserResult].
-     */
-    fun parse(tracker: CodeDataTracker): CombiningParserResult {
-        tracker.pop()?.let { firstHalf ->
-            if (firstHalf == COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF) {
-                tracker.pop()?.let { firstCharacter ->
-                    if (firstCharacter.isLetterOrDigit()) {
-                        tracker.pop()?.let { secondHalf ->
-                            if (secondHalf == COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF) {
-                                tracker.pop()?.let { secondCharacter ->
-                                    if (secondCharacter.isLetterOrDigit()) {
-                                        tracker.commit()
-                                        return CombiningParserResult.Success("$firstCharacter$COMBINING_DOUBLE_INVERTED_BREVE_CHARACTER$secondCharacter")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        tracker.rollback()
-        return CombiningParserResult.Failure("Unable to parse Double Inverted Breve")
-    }
-}
-
-/**
- * A class that parses the MARC8 Combining Double Tilde sequence.
- */
-internal class CombiningDoubleTildeParser {
-    /**
-     * Parses the current escape sequence in the given [tracker] and returns a [CombiningParserResult].
-     */
-    fun parse(tracker: CodeDataTracker): CombiningParserResult {
-        tracker.pop()?.let { firstHalf ->
-            if (firstHalf == COMBINING_DOUBLE_TILDE_FIRST_HALF) {
-                tracker.pop()?.let { firstCharacter ->
-                    if (firstCharacter.isLetterOrDigit()) {
-                        tracker.pop()?.let { secondHalf ->
-                            if (secondHalf == COMBINING_DOUBLE_TILDE_SECOND_HALF) {
-                                tracker.pop()?.let { secondCharacter ->
-                                    if (secondCharacter.isLetterOrDigit()) {
-                                        tracker.commit()
-                                        return CombiningParserResult.Success("$firstCharacter$COMBINING_DOUBLE_TILDE_CHARACTER$secondCharacter")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        tracker.rollback()
-        return CombiningParserResult.Failure("Unable to parse Double Tilde")
-    }
-}
-
-internal sealed class CombiningParserResult {
-    data class Success(val result: String) : CombiningParserResult()
-    data class Failure(val error: String) : CombiningParserResult()
 }

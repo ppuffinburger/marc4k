@@ -13,8 +13,6 @@ class Marc8ToUnicode : CharacterConverter {
     private val translateNcr: Boolean
     private val ncrTranslator: NcrTranslator by lazy { NcrTranslator() }
     private val escapeSequenceParser: Marc8EscapeSequenceParser by lazy { Marc8EscapeSequenceParser() }
-    private val combiningDoubleInvertedBreveParser: CombiningDoubleInvertedBreveParser by lazy { CombiningDoubleInvertedBreveParser() }
-    private val combiningDoubleTildeParser: CombiningDoubleTildeParser by lazy { CombiningDoubleTildeParser() }
 
     private var codeTable: CodeTable
     private var loadedMultiByteCodeTable = false
@@ -25,7 +23,9 @@ class Marc8ToUnicode : CharacterConverter {
      * @property[translateNcr] true if translating NCR sequences.  Defaults to false.
      */
     constructor(loadMultiByteCodeTable: Boolean = false, translateNcr: Boolean = false) : this(
-        inputStream = if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml")!! else Marc8ToUnicode::class.java.getResourceAsStream("/codetablesnocjk.xml")!!,
+        inputStream = if (loadMultiByteCodeTable) Marc8ToUnicode::class.java.getResourceAsStream("/codetables.xml")!! else Marc8ToUnicode::class.java.getResourceAsStream(
+            "/codetablesnocjk.xml"
+        )!!,
         translateNcr = translateNcr
     ) {
         loadedMultiByteCodeTable = loadMultiByteCodeTable
@@ -70,11 +70,6 @@ class Marc8ToUnicode : CharacterConverter {
                         }
                         continue@loop
                     }
-                    SPACE_CHARACTER -> {
-                        tracker.pop()?.let { append(it) }
-                        tracker.commit()
-                        continue@loop
-                    }
                     in C0_CONTROL_CHARACTER_RANGE -> {
                         tracker.pop()?.let {
                             errors.add(createConversionError("C0 control character found (${marc8CodeToHex(it)}), which is invalid, deleting it.", tracker))
@@ -83,7 +78,7 @@ class Marc8ToUnicode : CharacterConverter {
                         continue@loop
                     }
                     in C1_CONTROL_CHARACTER_RANGE -> {
-                        when(peeked) {
+                        when (peeked) {
                             NON_SORT_BEGIN_CHARACTER -> {
                                 tracker.pop()
                                 append(START_OF_STRING_CHARACTER)
@@ -102,7 +97,12 @@ class Marc8ToUnicode : CharacterConverter {
                             }
                             else -> {
                                 tracker.pop()?.let {
-                                    errors.add(createConversionError("C1 control character found (${marc8CodeToHex(it)}), which is invalid, deleting it.", tracker))
+                                    errors.add(
+                                        createConversionError(
+                                            "C1 control character found (${marc8CodeToHex(it)}), which is invalid, deleting it.",
+                                            tracker
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -113,44 +113,15 @@ class Marc8ToUnicode : CharacterConverter {
                 when {
                     tracker.isEACC() && parseEACC(tracker, this) -> {}
                     isStartOfDiacritics(tracker) -> {
-                        when(tracker.peek()) {
-                            COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF -> {
-                                when(val result = combiningDoubleInvertedBreveParser.parse(tracker)) {
-                                    is CombiningParserResult.Success -> { this.append(result.result) }
-                                    is CombiningParserResult.Failure -> {
-                                        errors.add(createConversionError(result.error, tracker))
-                                        tracker.pop()
-                                        tracker.commit()
-                                    }
-                                }
-                                continue@loop
-                            }
-                            COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF -> {
-                                // We found this by itself or there was another problem when parsing above and we popped the first half
-                                errors.add(createConversionError("Unable to parse Combining Double Inverted Breve Second Half", tracker))
-                                tracker.pop()
-                                tracker.commit()
-                            }
-                            COMBINING_DOUBLE_TILDE_FIRST_HALF -> {
-                                when(val result = combiningDoubleTildeParser.parse(tracker)) {
-                                    is CombiningParserResult.Success -> { this.append(result.result) }
-                                    is CombiningParserResult.Failure -> {
-                                        errors.add(createConversionError(result.error, tracker))
-                                        tracker.pop()
-                                        tracker.commit()
-                                    }
-                                }
-                                continue@loop
-                            }
-                            COMBINING_DOUBLE_TILDE_SECOND_HALF -> {
-                                // We found this by itself or there was another problem when parsing above and we popped the first half
-                                errors.add(createConversionError("Unable to parse Combining Double Tilde Second Half", tracker))
-                                tracker.pop()
-                                tracker.commit()
-                            }
+                        when (tracker.peek()) {
                             else -> {
                                 if (!parseDiacritics(tracker, diacritics)) {
-                                    errors.add(createConversionError("Orphaned diacritics found: ${diacritics.joinToString { marc8CodeToHex(it.first) }}", tracker))
+                                    errors.add(
+                                        createConversionError(
+                                            "Orphaned diacritics found: ${diacritics.joinToString { marc8CodeToHex(it.first) }}",
+                                            tracker
+                                        )
+                                    )
                                     tracker.commit()
                                     continue@loop
                                 }
@@ -170,7 +141,10 @@ class Marc8ToUnicode : CharacterConverter {
                                     tracker.commit()
 
                                     while (diacritics.isNotEmpty()) {
-                                        append(diacritics.pop().second)
+                                        val poppedDiacritic = diacritics.pop().second
+                                        if (poppedDiacritic != '\u0000') {
+                                            append(poppedDiacritic)
+                                        }
                                     }
                                 }
                             }
@@ -262,7 +236,7 @@ class Marc8ToUnicode : CharacterConverter {
     }
 
     private fun getChar(marcCode: MarcCode, tracker: CodeDataTracker): Char? {
-        return when(marcCode) {
+        return when (marcCode) {
             in 0x20..0x7E -> codeTable.getChar(marcCode, tracker.g0)
             in 0xA0..0xFE -> codeTable.getChar(marcCode, tracker.g1)
             else -> null
