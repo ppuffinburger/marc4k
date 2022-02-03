@@ -76,7 +76,7 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
      * Returns a representation of the data surrounding the current position in the stack in Hex and ASCII form.
      */
     fun getEnclosingData(): String {
-        val characters = with(mutableListOf<Char>()) {
+        val characters = buildList<Char> {
             undo.take(10 - size).forEach {
                 add(0, it)
             }
@@ -88,8 +88,6 @@ internal class CodeDataTracker(data: CharArray, var g0: IsoCode = BASIC_LATIN_GR
             stack.take(20 - size).forEach {
                 add(it)
             }
-
-            toList()
         }
 
         return "Hex: (${characters.joinToString(" ") { String.format(MARC8_CODE_HEX_PATTERN, it.code) }}) ASCII: (${characters.joinToString("") { if (isControlCharacter(it)) "?" else it.toString() }})"
