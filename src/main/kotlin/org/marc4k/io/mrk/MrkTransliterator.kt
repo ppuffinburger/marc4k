@@ -3,7 +3,7 @@ package org.marc4k.io.mrk
 import java.util.regex.Pattern
 
 object MrkTransliterator {
-    private val mnemonicPattern = Pattern.compile("""\{([A-Za-z0-9]{2,8}?)}""")
+    private val mnemonicPattern = Pattern.compile("""\{([A-Za-z\d]{2,8}?)}""")
     private val textToMarc: Map<String, String> by lazy { buildTextToMarcMap() }
     private val marcToText: Map<Char, String> by lazy { buildMarcToTextMap() }
 
@@ -58,7 +58,7 @@ object MrkTransliterator {
 
     private fun buildTextToMarcMap(): Map<String, String> {
         val map = mutableMapOf<String, String>()
-        javaClass.getResourceAsStream("/text_to_marc.csv").bufferedReader().useLines { lines ->
+        javaClass.getResourceAsStream("/text_to_marc.csv")?.bufferedReader()?.useLines { lines ->
             lines.forEach { line ->
                 if (!line.startsWith("*")) {
                     val (mnemonic, hex) = line.split(",")
@@ -71,7 +71,7 @@ object MrkTransliterator {
 
     private fun buildMarcToTextMap(): Map<Char, String> {
         val map = mutableMapOf<Char, String>()
-        javaClass.getResourceAsStream("/marc_to_text.csv").bufferedReader().useLines { lines ->
+        javaClass.getResourceAsStream("/marc_to_text.csv")?.bufferedReader()?.useLines { lines ->
             lines.forEach { line ->
                 if (!line.startsWith("*")) {
                     val (hex, _, mnemonic) = line.split(",")
