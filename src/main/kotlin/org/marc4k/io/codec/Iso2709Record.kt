@@ -1,7 +1,6 @@
 package org.marc4k.io.codec
 
 
-@Suppress("ArrayInDataClass")
 data class Iso2709Record(val leader: String, val controlFields: MutableList<Iso2709ControlField> = mutableListOf(), val dataFields: MutableList<Iso2709DataField> = mutableListOf())
 
 @Suppress("ArrayInDataClass")

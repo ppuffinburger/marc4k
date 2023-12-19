@@ -1,8 +1,8 @@
 package org.marc4k.io.converter.marc8
 
-internal const val COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF = '\u00EB'
+//internal const val COMBINING_DOUBLE_INVERTED_BREVE_FIRST_HALF = '\u00EB'
 internal const val COMBINING_DOUBLE_INVERTED_BREVE_SECOND_HALF = '\u00EC'
-internal const val COMBINING_DOUBLE_TILDE_FIRST_HALF = '\u00FA'
+//internal const val COMBINING_DOUBLE_TILDE_FIRST_HALF = '\u00FA'
 internal const val COMBINING_DOUBLE_TILDE_SECOND_HALF = '\u00FB'
 internal const val NON_SORT_BEGIN_CHARACTER = '\u0088'
 internal const val NON_SORT_END_CHARACTER = '\u0089'

@@ -48,7 +48,7 @@ class CodeTableHandler(private val codeTableHandlerCallback: CodeTableHandlerCal
     }
 
     override fun characters(ch: CharArray?, start: Int, length: Int) {
-        elementValueBuilder.append(ch, start, length)
+        elementValueBuilder.appendRange(ch!!, start, start + length)
     }
 
     private fun updateCurrentCode(elementName: String) {

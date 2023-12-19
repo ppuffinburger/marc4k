@@ -90,7 +90,7 @@ class MarcXmlHandler(private val marcXmlHandlerCallback: MarcXmlHandlerCallback)
     }
 
     override fun characters(ch: CharArray?, start: Int, length: Int) {
-        elementValueBuilder.append(ch, start, length)
+        elementValueBuilder.appendRange(ch!!, start, start + length)
     }
 
     override fun endDocument() {

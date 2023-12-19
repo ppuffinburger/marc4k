@@ -41,8 +41,8 @@ class CommunityLeaderBuilder {
     var indicatorCount = 2
     var subfieldCodeCount = 2
     var baseAddressOfData = 0
-    var undefinedPosition17 = ' '
-    var undefinedPosition18 = ' '
+    private var undefinedPosition17 = ' '
+    private var undefinedPosition18 = ' '
     var undefinedPosition19 = ' '
     var lengthOfTheLengthOfFieldPortion = '4'
     var lengthOfTheStartingCharacterPositionPortion = '5'

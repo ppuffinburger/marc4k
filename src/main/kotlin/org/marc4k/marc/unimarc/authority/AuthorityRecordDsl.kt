@@ -41,7 +41,7 @@ class AuthorityLeaderBuilder {
     var subfieldCodeCount = 2
     var baseAddressOfData = 0
     var encodingLevel = EncodingLevel.INVALID
-    var undefinedPosition18 = ' '
+    private var undefinedPosition18 = ' '
     var undefinedPosition19 = ' '
     var lengthOfTheLengthOfFieldPortion = '4'
     var lengthOfTheStartingCharacterPositionPortion = '5'

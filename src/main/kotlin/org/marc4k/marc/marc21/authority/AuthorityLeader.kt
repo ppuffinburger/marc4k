@@ -75,7 +75,7 @@ enum class RecordStatus(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = values().associateBy { it.value }
+        private val map = entries.associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -85,7 +85,7 @@ enum class TypeOfRecord(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = values().associateBy { it.value }
+        private val map = entries.associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -96,7 +96,7 @@ enum class EncodingLevel(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = values().associateBy { it.value }
+        private val map = entries.associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
@@ -109,7 +109,7 @@ enum class PunctuationPolicy(val value: Char) {
     INVALID('\u0000');
 
     companion object {
-        private val map = values().associateBy { it.value }
+        private val map = entries.associateBy { it.value }
         fun fromValue(value: Char) = map[value] ?: INVALID
     }
 }
